@@ -2,28 +2,278 @@
 <html lang="en">
   <head>
     <%- include('./partials/head') %>
-    <title>Home page</title>
+    <title>Home Page</title>
+    <!-- Include Bootstrap CSS -->
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f8f9fa;
+        color: #495057;
+      }
+
+      /* Navbar Styling */
+      .navbar {
+        background-color: #343a40;
+      }
+      .navbar-brand,
+      .nav-link {
+        color: white !important;
+      }
+      .navbar-brand:hover,
+      .nav-link:hover {
+        color: #28a745 !important;
+      }
+
+      /* Form Styling */
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+      label {
+        font-weight: bold;
+      }
+      select,
+      input[type="text"],
+      button {
+        display: block;
+        width: 100%;
+        padding: 0.75rem;
+        margin-top: 0.5rem;
+        font-size: 1rem;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+      }
+      select:focus,
+      input[type="text"]:focus,
+      button:focus {
+        border-color: #28a745;
+        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+      }
+      button[type="submit"] {
+        background-color: #28a745;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+      }
+      button[type="submit"]:hover {
+        background-color: #218838;
+        border-color: #1e7e34;
+      }
+
+      /* Card Styling */
+      .card {
+        margin-bottom: 30px;
+        border: none;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+      }
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      }
+      .card img {
+        height: 200px;
+        object-fit: cover;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+        transition: transform 0.3s ease-in-out;
+      }
+      .card:hover img {
+        transform: scale(1.1);
+      }
+      .card-title {
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        text-align: center;
+      }
+      .card-body {
+        padding: 1.5rem;
+      }
+      .btn-primary {
+        background-color: #28a745;
+        border-color: #28a745;
+        padding: 10px 20px;
+        font-size: 1em;
+        font-weight: bold;
+        display: block;
+        margin: 0 auto;
+        transition: background-color 0.3s, border-color 0.3s;
+      }
+      .myBtn {
+        width: 100px;
+      }
+      .btn-primary:hover {
+        background-color: #218838;
+        border-color: #1e7e34;
+      }
+
+      /* Container and Row */
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+      }
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        margin: -15px;
+      }
+      .col-md-3 {
+        padding: 15px;
+      }
+
+      /* Utility Classes */
+      .mt-5 {
+        margin-top: 3rem !important;
+      }
+      .text-center {
+        text-align: center !important;
+      }
+      .stretched-link {
+        position: relative;
+        z-index: 1;
+      }
+      .stretched-link::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        z-index: 0;
+      }
+    
+      .filter-search-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px; /* Adjust the gap between filter and search as needed */
+    padding: 10px; /* Adjust the padding as needed */
+    width: 100%;
+}
+
+.filter, .search {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Adjust the gap between elements inside filter and search */
+    width: 100%;
+}
+
+.filter input, .search input {
+    padding: 10px;
+    font-size: 16px; /* Adjust the font size as needed */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    flex: 1;
+}
+
+.search button {
+    padding: 10px 20px;
+    font-size: 16px; /* Adjust the font size as needed */
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.search button:hover {
+    background-color: #218838; /* Adjust hover color as needed */
+}
+
+@media (max-width: 768px) {
+    .filter-search-container {
+        flex-direction: column;
+        gap: 10px; /* Adjust the gap for mobile view */
+    }
+
+    .filter input, .search input, .search button {
+        flex: none; /* Adjust flex property for mobile view */
+        width: 100%;
+    }
+}
+
+    </style>
   </head>
   <body>
+    <!-- Navbar (Assuming it's included in partials/nav) -->
     <%- include('./partials/nav') %>
-    <div class="container mt-3 text-center">
-      <div class="row row-cols-4">
-        <% blogs.forEach(blog => { %>
-        <div class="col card">
+    <div class="container filter-search-container ">
+      <div class="filter">
+        <div class="col-12">
+          <form action="/" method="get" class="mb-4">
+            <div class="form-group">
+
+              <select id="dropdown" name="filterBy" class="form-control">
+                <option value="" disabled selected>Select...</option>
+                <option value="Views">Views</option>
+                <option value="Likes">Likes</option>
+                <option value="Recent">Recent</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <button type="submit" class="btn btn-primary myBtn">
+                Filter
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class=" search">
+        <div class="col-12">
+          <form action="/" method="get" class="mb-4">
+            <div class="form-group">
+              <input
+                type="text"
+                name="search"
+                class="form-control"
+                placeholder="Search..."
+              />
+            </div>
+            <div class="form-group">
+              <button type="submit" class="btn btn-primary myBtn">
+                Search
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <!-- Blog Cards Section -->
+    <div class="row">
+      <% blogs.forEach(blog => { %>
+      <div class="col-md-3">
+        <div class="card">
           <img
-            src="<%= blog.coverImageURL  %>"
+            src="<%= blog.coverImageURL %>"
             class="card-img-top"
-            alt="..."
+            alt="Blog cover image"
           />
           <div class="card-body">
             <h5 class="card-title"><%= blog.title %></h5>
-            <a href="/blog/<%= blog._id %>" class="btn btn-primary">Read</a>
+            <a
+              href="/blog/<%= blog._id %>/<%= locals.user ? locals.user._id : 'abc23521aa1bef45662212ad' %>"
+              class="btn btn-primary stretched-link"
+              >Read</a
+            >
           </div>
         </div>
-        <% }) %>
       </div>
+      <% }) %>
     </div>
-  </body>
 
-  <%- include('./partials/scripts') %>
+    <!-- Include Scripts (Assuming it's included in partials/scripts) -->
+    <%- include('./partials/scripts') %>
+    <!-- Include Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  </body>
 </html>

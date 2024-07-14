@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('./partials/head') %>
+    <title>Bookmarks</title>
+    <!-- Include Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #495057;
+        }
+
+        .container {
+            max-width: 800px; /* Adjust max-width as needed */
+            margin: 20px auto;
+        }
+
+        .bookmark-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .btn a {
+            color: white; /* Link color */
+            text-decoration: none;
+        }
+
+       
+
+        .delete-link {
+            color: #dc3545; /* Delete link color */
+            margin-left: 10px;
+            cursor: pointer;
+        }
+
+        .delete-link:hover {
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar (Assuming it's included in partials/nav) -->
+    <%- include('./partials/nav') %>
+    
+    <div class="container">
+        <h2 class="mt-4 mb-3">Bookmarks</h2>
+
+        <% if (bookmarks.length > 0) { %>
+            <% bookmarks.forEach(bookmark => { %>
+                <div class="bookmark-item">
+                    <h4><a href="/blog/<%= bookmark.blogId %>/<%= bookmark.userId %>"><%= bookmark.blogName %></a></h4>
+                    <button class="btn btn-danger btn-sm">
+                        <a href="/blog/<%= user._id %>/bookmarkDel/<%= bookmark.blogId %>" class="delete-link">Delete</a>
+                    </button>
+                </div>
+            <% }) %>
+        <% } else { %>
+            <p>No bookmarks found.</p>
+        <% } %>
+    </div>
+
+    <!-- Include Scripts (Assuming it's included in partials/scripts) -->
+    <%- include('./partials/scripts') %>
+    <!-- Include Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

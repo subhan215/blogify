@@ -1,40 +1,28 @@
 const { Router } = require("express");
-const User = require("../models/user");
+const path = require("path");
+const multer = require("multer");
+const { getLatestNotificationsHandler, getAllNotificationsHandler, getSignUpPage, getSignInPage, postUser, postSignIn, logOutHandler, delLatestNotificationsHandler, delAllNotificationsHandler } = require("../controllers/user");
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, path.resolve(`./public/uploads`));
+  },
+  filename: function (req, file, cb) {
+    const fileName = `${Date.now()}-${file.originalname}`;
+    cb(null, fileName);
+  },
+});
 
+const upload = multer({ storage: storage });
 const router = Router();
-
-router.get("/signup", (req, res) => {
-  return res.render("signup");
-});
-router.get("/signin", (req, res) => {
-  return res.render("signin");
-});
-
-router.post("/signup", async (req, res) => {
-  const { fullName, email, password } = req.body;
-  await User.create({
-    fullName,
-    email,
-    password,
-  });
-  return res.redirect("/");
-});
-
-router.post("/signin", async (req, res) => {
-  const { email, password } = req.body;
-  try {
-    const token = await User.matchPasswordAndGenerateToken(email, password);
-    console.log("token: ", token);
-    return res.cookie("token", token).redirect("/");
-  } catch (error) {
-        return res.render("signin" , {
-            error: "Incorrect Email Or Password!"
-        })
-  }
-});
-
-router.get("/logout" , (req , res) => {
-  res.clearCookie("token").redirect("/")
-})
+// notifications route ///
+router.get("/:userId/latestNotifications" , getLatestNotificationsHandler)
+router.get("/:userId/allNotifications" , getAllNotificationsHandler)
+router.get("/:userId/latestNotificationDel/:blogId" ,delLatestNotificationsHandler)
+router.get("/:userId/allNotificationDel/:blogId" ,delAllNotificationsHandler)
+router.get("/signup", getSignUpPage);
+router.get("/signin", getSignInPage);
+router.post("/signup",upload.single("coverImage") ,postUser);
+router.post("/signin", postSignIn);
+router.get("/logout" , logOutHandler)
 const userRoute = router;
 module.exports = userRoute;

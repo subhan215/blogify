@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('./partials/head') %>
+    <title>Notifications</title>
+    <!-- Include Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #495057;
+        }
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 1rem;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .notifications-list {
+            margin-top: 1rem;
+        }
+        .notification-item {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+        .notification-item p {
+            margin-bottom: 0.5rem;
+        }
+        .notification-item a {
+            color: #007bff;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .notification-item a:hover {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+        .notification-item .delete-link {
+            color: #dc3545;
+            font-size: 0.9em;
+            text-decoration: none;
+            margin-left: 1rem;
+            transition: color 0.3s;
+        }
+        .notification-item .delete-link:hover {
+            color: #bd2130;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar (Assuming it's included in partials/nav) -->
+    <%- include('./partials/nav') %>
+
+    <div class="container">
+        <h2>Notifications</h2>
+        <div class="notifications-list">
+            <% if (notifications.length === 0) { %>
+                <p>No notifications to display.</p>
+            <% } else { %>
+                <% notifications.forEach(notification => { %>
+                    <div class="notification-item">
+                        <p>
+                            <a href="/blog/<%= notification?.blogId %>/<%= notification?.userIdOfBlog %>">
+                                <%= notification?.message %>
+                            </a>
+                        </p>
+                        <a href="/user/<%= user._id %>/<%= text === "Latest" ? 'latestNotificationDel' : "allNotificationDel" %>/<%= notification?.blogId %>" class="delete-link">delete</a>
+                    </div>
+                <% }) %>
+            <% } %>
+        </div>
+        
+        <div>
+            <a href="/user/<%= user._id %>/<%= text == "Latest" ? "allNotifications": "latestNotifications" %>" class="btn btn-primary mt-3">View <%= text == "Latest" ? "All" : "Latest" %> Notifications</a>
+        </div>
+    </div>
+
+    <!-- Include Scripts (Assuming it's included in partials/scripts) -->
+    <%- include('./partials/scripts') %>
+    <!-- Include Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

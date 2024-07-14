@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('./partials/head') %>
+    <title>User Profile</title>
+    <!-- Include Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #495057;
+        }
+
+        .container-profileData {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .profile-info {
+            background-color: #fff;
+            padding: 30px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .profile-info p {
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .follow-button {
+            margin-top: 20px;
+        }
+
+        .followers-following {
+            margin-top: 40px;
+        }
+
+        .followers-following .section-title {
+            font-weight: bold;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            border-bottom: 2px solid #28a745;
+            padding-bottom: 10px;
+        }
+
+        .followers-following .user-card {
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            transition: box-shadow 0.3s ease-in-out;
+        }
+
+        .followers-following .user-card:hover {
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .followers-following .user-card img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 20px;
+        }
+
+        .followers-following .user-card .user-info {
+            flex-grow: 1;
+        }
+
+        .followers-following .user-card .user-info p {
+            margin: 0;
+            font-size: 1em;
+        }
+
+        .followers-following .user-card .user-info p.text-muted {
+            font-size: 0.9em;
+        }
+
+        .card {
+            margin-bottom: 30px;
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .card img {
+            height: 200px;
+            object-fit: cover;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .card:hover img {
+            transform: scale(1.1);
+        }
+
+        .card-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background-color: #28a745;
+            border-color: #28a745;
+            padding: 10px 20px;
+            font-size: 1em;
+            font-weight: bold;
+            display: block;
+            margin: 0 auto;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .btn-primary:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: -15px;
+        }
+
+        .col-md-3 {
+            padding: 15px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar (Assuming it's included in partials/nav) -->
+    <%- include('./partials/nav') %>
+
+    <div class="container-profileData">
+        <!-- Profile Information -->
+        <div class="profile-info">
+            <p>Name: <%= blogUser.fullName %></p>
+            <p>Email: <%= blogUser.email %></p>
+            <p>Role: <%= blogUser.role %></p>
+            <p>Followers: <%= blogUser.followers ? blogUser.followers.length : 0 %></p>
+            <p>Following: <%= blogUser.following ? blogUser.following.length : 0 %></p>
+            <% if (locals.user && locals.user._id != blogUser._id) { %>
+                <div class="follow-button">
+                    <a href="/profile/<%= user._id %>/follow/<%= blogUser._id %>" class="btn btn-primary"><%= followUnfollowBool ? "Unfollow" : "Follow" %></a>
+                </div>
+            <% } %>
+        </div>
+
+        <!-- Followers and Following (Visible only to the user) -->
+        <% if (locals.user && locals.blogUser && locals.user._id == locals.blogUser._id) { %>
+            <div class="followers-following">
+                <div class="followers-section">
+                    <p class="section-title">Followers (<%= followers?.length %>)</p>
+                    <% followers.forEach(follower => { %>
+                        <div class="user-card">
+                            <img src="<%= follower.profileImageURL %>" alt="<%= follower.fullName %>'s profile image">
+                            <div class="user-info">
+                                <p><%= follower.fullName %></p>
+                                <p class="text-muted"><%= follower.email %></p>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+                <div class="following-section">
+                    <p class="section-title">Following (<%= followings?.length %>)</p>
+                    <% followings.forEach(following => { %>
+                        <div class="user-card">
+                            <img src="<%= following.profileImageURL %>" alt="<%= following.fullName %>'s profile image">
+                            <div class="user-info">
+                                <p><%= following.fullName %></p>
+                                <p class="text-muted"><%= following.email %></p>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+            </div>
+        <% } %>
+    </div>
+
+    <!-- Blog Cards Section -->
+    <div class="container">
+        <h3>Blogs</h3>
+        <div class="row">
+            <% blogs.forEach(blog => { %>
+                <div class="col-md-3">
+                    <div class="card">
+                        <img src="<%= blog.coverImageURL %>" class="card-img-top" alt="Blog cover image">
+                        <div class="card-body">
+                            <h5 class="card-title"><%= blog.title %></h5>
+                            <a href="/blog/<%= blog._id %>/<%= locals.user ? locals.user._id : 'abc23521aa1bef45662212ad' %>" class="btn btn-primary stretched-link">Read</a>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    </div>
+
+    <%- include('./partials/scripts') %>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
