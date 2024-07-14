@@ -146,6 +146,26 @@
         .col-md-3 {
             padding: 15px;
         }
+
+        .live-chat-button {
+            margin-top: 20px;
+        }
+
+        .live-chat-button a {
+            background-color: #007bff;
+            color: #fff;
+            border: 1px solid #007bff;
+            padding: 10px 20px;
+            text-decoration: none;
+            display: inline-block;
+            border-radius: 5px;
+            transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+        }
+
+        .live-chat-button a:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
     </style>
 </head>
 <body>
@@ -163,6 +183,9 @@
             <% if (locals.user && locals.user._id != blogUser._id) { %>
                 <div class="follow-button">
                     <a href="/profile/<%= user._id %>/follow/<%= blogUser._id %>" class="btn btn-primary"><%= followUnfollowBool ? "Unfollow" : "Follow" %></a>
+                </div>
+                <div class="live-chat-button">
+                    <a href="/profile/<%= user._id %>/privateMessage">Live Chat</a>
                 </div>
             <% } %>
         </div>

@@ -1,145 +1,182 @@
+<style>
+  body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  }
 
-    <style>
-      body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      }
+  /* Navbar Styling */
+  .navbar {
+    background-color: #343a40;
+  }
+  .navbar-brand,
+  .nav-link,
+  .dropdown-toggle {
+    color: white !important;
+  }
+  .navbar-brand {
+    font-size: 1.5em;
+    font-weight: bold;
+  }
+  .nav-link:hover {
+    background-color: #28a745;
+    border-bottom: none !important;
+  }
+  .nav-link.active {
+    font-weight: bold;
+    border-bottom: 2px solid #28a745;
+  }
+  .dropdown-menu {
+    background-color: #343a40;
+  }
+  .dropdown-item {
+    color: white !important;
+  }
+  .dropdown-item:hover {
+    background-color: #495057;
+  }
+  .navbar-toggler {
+    border: none;
+  }
+  .navbar-toggler-icon {
+    filter: invert(1);
+  }
 
-      /* Navbar Styling */
-      .navbar {
-        background-color: #343a40;
-      }
-      .navbar-brand, .nav-link, .dropdown-toggle {
-        color: white !important;
-      }
-      .navbar-brand {
-        font-size: 1.5em;
-        font-weight: bold;
-      }
-      .nav-link:hover{
-        background-color:  #28a745 ;
-        border-bottom: none !important;
-      }
-      .nav-link.active {
-        font-weight: bold;
-        border-bottom: 2px solid #28a745 ;
-      }
-      .dropdown-menu {
-        background-color: #343a40;
-      }
-      .dropdown-item {
-        color: white !important;
-      }
-      .dropdown-item:hover {
-        background-color: #495057;
-      }
-      .navbar-toggler {
-        border: none;
-      }
-      .navbar-toggler-icon {
-        filter: invert(1);
-      }
-
-      
-      /* Card Styling */
-      .card {
-        margin-bottom: 30px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        border: none;
-      }
-      .card img {
-        height: 200px;
-        object-fit: cover;
-      }
-      .card-body {
-        background-color: #f8f9fa;
-      }
-      .card-title {
-        font-size: 1.25em;
-        font-weight: bold;
-      }
-      .btn-secondary {
-        background-color: #6c757d;
-        border-color: #6c757d;
-        transition: background-color 0.3s, border-color 0.3s;
-      }
-      .btn-secondary:hover {
-        background-color: #5a6268;
-        border-color: #545b62;
-      }
-       /* Custom Styling for Log Out Link */
-       .dropdown-item-logout {
-        color: white !important;
-        font-weight: bold;
-        padding: 8px 20px;
-        transition: background-color 0.3s;
-      }
-      .dropdown-item-logout:hover {
-        background-color: #28a745 ;
-      }
-    </style>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="#">Blogify</a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNavDropdown"
-          aria-controls="navbarNavDropdown"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNavDropdown">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item">
-              <a class="nav-link <%= currentRoute === '/' ? 'active' : '' %>" aria-current="page" href="/">Home</a>
-            </li>
-            <% if (locals.user) { %>
-            <li class="nav-item">
-              <a class="nav-link <%= currentRoute === '/add-new' ? 'active' : '' %>" href="/blog/add-new">Add Blog</a>
-            </li>
-            <li class="nav-item dropdown">
-              <a
-                class="nav-link dropdown-toggle"
-                href="#"
-                role="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
+  /* Card Styling */
+  .card {
+    margin-bottom: 30px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: none;
+  }
+  .card img {
+    height: 200px;
+    object-fit: cover;
+  }
+  .card-body {
+    background-color: #f8f9fa;
+  }
+  .card-title {
+    font-size: 1.25em;
+    font-weight: bold;
+  }
+  .btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    transition: background-color 0.3s, border-color 0.3s;
+  }
+  .btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+  }
+  /* Custom Styling for Log Out Link */
+  .dropdown-item-logout {
+    color: white !important;
+    font-weight: bold;
+    padding: 8px 20px;
+    transition: background-color 0.3s;
+  }
+  .dropdown-item-logout:hover {
+    background-color: #28a745;
+  }
+</style>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">Blogify</a>
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNavDropdown"
+      aria-controls="navbarNavDropdown"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a
+            class="nav-link <%= currentRoute === '/' ? 'active' : '' %>"
+            aria-current="page"
+            href="/"
+            >Home</a
+          >
+        </li>
+        <% if (locals.user) { %>
+        <li class="nav-item">
+          <a
+            class="nav-link <%= currentRoute === '/add-new' ? 'active' : '' %>"
+            href="/blog/add-new"
+            >Add Blog</a
+          >
+        </li>
+        <li class="nav-item dropdown">
+          <a
+            class="nav-link dropdown-toggle"
+            href="#"
+            role="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            <%= locals.user.username %>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+              <a class="dropdown-item dropdown-item-logout" href="/user/logout"
+                >Log Out</a
               >
-                <%= locals.user.username %>
-              </a>
-              <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item dropdown-item-logout" href="/user/logout">Log Out</a></li>
-                <li><a class="dropdown-item dropdown-item-logout" href="/profile/<%= user._id %>">Profile</a></li>
-                <li><a class="dropdown-item dropdown-item-logout" href="/user/<%= user._id %>/latestNotifications">Latest Notifications</a></li>
-                <li><a class="dropdown-item dropdown-item-logout" href="/blog/<%= user._id %>/bookmarks">Bookmarks</a></li>
-              </ul>
             </li>
-            <% } else { %>
-            <li class="nav-item">
-              <a class="nav-link <%= currentRoute === '/user/signup' ? 'active' : '' %>" href="/user/signup">Create Account</a>
+            <li>
+              <a
+                class="dropdown-item dropdown-item-logout"
+                href="/profile/<%= user._id %>"
+                >Profile</a
+              >
             </li>
-            <li class="nav-item">
-              <a class="nav-link <%= currentRoute === '/user/signin' ? 'active' : '' %>" href="/user/signin">Sign In</a>
+            <li>
+              <a
+                class="dropdown-item dropdown-item-logout"
+                href="/user/<%= user._id %>/latestNotifications"
+                >Latest Notifications</a
+              >
             </li>
-            <% } %>
+            <li>
+              <a
+                class="dropdown-item dropdown-item-logout"
+                href="/blog/<%= user._id %>/bookmarks"
+                >Bookmarks</a
+              >
+            </li>
           </ul>
-        </div>
-      </div>
-    </nav>
-
-   
-
-    <% if (locals.error) { %>
-    <div class="container mt-4">
-      <div class="alert alert-danger" role="alert"><%= locals.error %></div>
+        </li>
+        <% } else { %>
+        <li class="nav-item">
+          <a
+            class="nav-link <%= currentRoute === '/user/signup' ? 'active' : '' %>"
+            href="/user/signup"
+            >Create Account</a
+          >
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link <%= currentRoute === '/user/signin' ? 'active' : '' %>"
+            href="/user/signin"
+            >Sign In</a
+          >
+        </li>
+        <% } %>
+      </ul>
     </div>
-    <% } %>
-    <!-- Include Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.min.js"></script>
-  
+  </div>
+</nav>
+
+<% if (locals.error) { %>
+<div class="container mt-4">
+  <div class="alert alert-danger" role="alert"><%= locals.error %></div>
+</div>
+<% } %>
+<!-- Include Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>

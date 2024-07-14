@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('./partials/head') %>
+    <title>Private Messaging</title>
+    <!-- Include Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #495057;
+            padding-top: 60px; /* Adjust as per your navbar height */
+        }
+        .chat-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            background-color: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .chat-box {
+            height: 400px; /* Adjust height based on your design */
+            overflow-y: scroll;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            background-color: #f3f4f6;
+        }
+        .message {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background-color: #007bff;
+            color: #ffffff;
+            max-width: 70%;
+            word-wrap: break-word;
+        }
+        .message.sender {
+            background-color: #28a745;
+        }
+        .message-text {
+            margin-left: 10px;
+            font-size: 14px;
+        }
+        .message-sender {
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .message-time {
+            font-size: 10px;
+            color: #868e96;
+        }
+        .input-group {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar (Assuming it's included in partials/nav) -->
+    <%- include('./partials/nav') %>
+    <div class="container chat-container">
+        <h1>Live Chat</h1>
+        <div class="chat-box" id="chatBox">
+            <!-- Messages will be dynamically added here -->
+        </div>
+        <div class="input-group">
+            <input type="text" id="message" class="form-control" placeholder="Enter message.." />
+            <input type="text" value="<%= user?._id %>" hidden id="currentUser">
+            <input type="text" value="<%= blogUser?._id %>" hidden id="toSendUser">
+            <div class="input-group-append">
+                <button id="sendBtn" class="btn btn-primary">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include Scripts (Assuming it's included in partials/scripts) -->
+    <%- include('./partials/scripts') %>
+    <!-- Include Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const socket = io();
+            const userId = document.getElementById("currentUser").value;
+            const recipientId = document.getElementById("toSendUser").value;
+            const chatBox = document.getElementById("chatBox");
+
+            socket.emit('register', userId);
+
+            // Send a private message
+            document.getElementById('sendBtn').addEventListener('click', () => {
+                const message = document.getElementById('message').value;
+                if (message.trim() !== '') {
+                    socket.emit('private_message', { senderId: userId, recipientId, message });
+                    addMessage('You', message, true);
+                    document.getElementById('message').value = '';
+                }
+            });
+
+            // Receive a private message
+            socket.on('private_message', (data) => {
+                const { sender, message } = data;
+                addMessage(sender, message, false);
+            });
+
+            // Function to add messages to the chat box
+            function addMessage(sender, message, isSender) {
+                const messageClass = isSender ? 'message sender' : 'message';
+                const messageHtml = `
+                    <div class="${messageClass}">
+                        <div class="message-text">
+                            <span class="message-sender">${sender}</span><br>
+                            ${message}
+                            <div class="message-time">${formatTime(new Date())}</div>
+                        </div>
+                    </div>
+                `;
+                chatBox.innerHTML += messageHtml;
+                chatBox.scrollTop = chatBox.scrollHeight; // Scroll to bottom
+            }
+
+            // Function to format time as HH:MM
+            function formatTime(date) {
+                const hours = date.getHours().toString().padStart(2, '0');
+                const minutes = date.getMinutes().toString().padStart(2, '0');
+                return `${hours}:${minutes}`;
+            }
+        });
+    </script>
+</body>
+</html>
