@@ -24,17 +24,37 @@ io.on('connection', (socket) => {
     socket.on('private_message', async (data) => {
         const { senderId, recipientId, message } = data;
         const recipientSocketId = connectedUsers[recipientId];
+        const sender = await User.findById(senderId);
         if (recipientSocketId) {
-            const sender = await User.findById(senderId);
+           
             if (sender) {
                 io.to(recipientSocketId).emit('private_message', {
                     sender: sender.fullName,
                     message: message
                 });
             }
+            await Message.create({
+              senderId , 
+              recipientId , 
+              content: message , 
+              delivered: true , 
+              senderName: sender.fullName
+            })
         } else {
             console.log('Recipient not connected');
+            await Message.create({
+              senderId , 
+              recipientId , 
+              content: message , 
+              delivered: false , 
+              senderName: sender.fullName
+            })
         }
+       await notificationMsg.create({
+         senderId , 
+         recipientId , 
+         senderName: sender.fullName
+       })
     });
 
     // Handle disconnection
@@ -59,6 +79,8 @@ const { connectMongoDb } = require("./connection/connection");
 const { checkForAuthenticationCookie } = require("./middlewares/authentication");
 const Blog = require("./models/blog");
 const profRoute = require("./routes/profile");
+const Message = require("./models/message");
+const notificationMsg = require("./models/notificationMsg");
 
 connectMongoDb(process.env.MONGOD_CONNECT_URI);
 app.set("view engine", "ejs");
@@ -68,6 +90,7 @@ app.use(cookieParser());
 app.use(checkForAuthenticationCookie("token"));
 app.use(express.static(path.resolve("./public")));
 app.get("/", async (req, res) => {
+  const messageNotifications = await notificationMsg.find({recipientId: req.user?._id}) 
   const filter = req.query.filterBy;
   const search = req.query.search;
   let blogs = await Blog.find({});
@@ -86,18 +109,21 @@ app.get("/", async (req, res) => {
           blogs: blogs,
           currentRoute: "/",
           user: req.user,
+          messageNotifications
         });
       }
       return res.render("home", {
         blogs: blogs,
         currentRoute: "/",
         user: req.user,
+        messageNotifications
       });
     } catch (err) {
       return res.status(500).render("home", {
         blogs: blogs,
         currentRoute: "/",
         user: req.user,
+        messageNotifications
       });
     }
   } else if (search) {
@@ -113,6 +139,7 @@ app.get("/", async (req, res) => {
         blogs: blogs,
         currentRoute: "/",
         user: req.user,
+        messageNotifications
       });
     } catch (err) {
       console.error(err);
@@ -120,6 +147,7 @@ app.get("/", async (req, res) => {
         blogs: blogs,
         currentRoute: "/",
         user: req.user,
+        messageNotifications
       });
     }
   }
@@ -127,6 +155,7 @@ app.get("/", async (req, res) => {
     blogs: blogs,
     currentRoute: "/",
     user: req.user,
+    messageNotifications
   });
 });
 

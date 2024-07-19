@@ -1,5 +1,6 @@
 const Blog = require("../models/blog");
 const Comment = require("../models/comment");
+const notificationMsg = require("../models/notificationMsg");
 const User = require("../models/user");
 async function getProfile(req, res) {
   const user = await User.findById(req.params.userId);
@@ -22,6 +23,8 @@ async function getProfile(req, res) {
     followings.push(following);
   }
   const blogs = await Blog.find({ createdBy: user._id });
+  const messageNotifications = await notificationMsg.find({recipientId: req.user._id}) 
+  console.log(messageNotifications)
   return res.render("profile", {
     currentRoute: "/profile",
     blogUser: user,
@@ -30,6 +33,7 @@ async function getProfile(req, res) {
     followers,
     followings,
     blogs,
+    messageNotifications
   });
 }
 async function followUserHandler(req , res) {

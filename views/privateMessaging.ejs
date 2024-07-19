@@ -5,6 +5,8 @@
     <title>Private Messaging</title>
     <!-- Include Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Include Font Awesome -->
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css">
     <style>
         body {
             font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
@@ -40,6 +42,7 @@
         }
         .message.sender {
             background-color: #28a745;
+            margin-left: auto;
         }
         .message-text {
             margin-left: 10px;
@@ -51,10 +54,32 @@
         }
         .message-time {
             font-size: 10px;
+            color: lightskyblue;
+            text-align: right;
+        }
+        .message-status {
+            text-align: right;
+            margin-top: 5px;
+            font-size: 12px;
+        }
+        .message-status i {
+            margin-left: 5px;
+            color: lightskyblue;
+        }
+        .seen {
+            color: #28a745;
+        }
+        .unseen {
             color: #868e96;
         }
         .input-group {
             margin-top: 20px;
+        }
+        .input-group .form-control {
+            border-radius: 0.375rem 0 0 0.375rem;
+        }
+        .input-group .btn {
+            border-radius: 0 0.375rem 0.375rem 0;
         }
     </style>
 </head>
@@ -62,14 +87,27 @@
     <!-- Navbar (Assuming it's included in partials/nav) -->
     <%- include('./partials/nav') %>
     <div class="container chat-container">
-        <h1>Live Chat</h1>
+        <h1 class="text-center mb-4">Private Messaging</h1>
         <div class="chat-box" id="chatBox">
-            <!-- Messages will be dynamically added here -->
+            <% messages.forEach(message => { %>
+                <div class="<%= message.senderId == user._id ? "message sender" : "message" %>">
+                    <div class="message-text">
+                        <span class="message-sender"><%= message.senderName === user.fullName ? "You" : message.senderName %></span><br>
+                        <%= message.content %>
+                        <div class="message-time"><%= new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) %></div>
+                        <% if (message.senderId == locals.user._id) { %>
+                            <div class="message-status">
+                                <i class="fas <%= message.delivered ? 'fa-check-double seen' : 'fa-check unseen' %>"></i>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            <% }) %>
         </div>
         <div class="input-group">
-            <input type="text" id="message" class="form-control" placeholder="Enter message.." />
-            <input type="text" value="<%= user?._id %>" hidden id="currentUser">
-            <input type="text" value="<%= blogUser?._id %>" hidden id="toSendUser">
+            <input type="text" id="message" class="form-control" placeholder="Enter message..." />
+            <input type="hidden" id="currentUser" value="<%= user?._id %>">
+            <input type="hidden" id="toSendUser" value="<%= blogUser?._id %>">
             <div class="input-group-append">
                 <button id="sendBtn" class="btn btn-primary">Send</button>
             </div>
@@ -117,6 +155,7 @@
                             <span class="message-sender">${sender}</span><br>
                             ${message}
                             <div class="message-time">${formatTime(new Date())}</div>
+                            ${isSender ? `<div class="message-status"><i class="fas fa-check unseen"></i></div>` : ''}
                         </div>
                     </div>
                 `;

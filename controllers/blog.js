@@ -5,7 +5,7 @@ const langs = require("../languages");
 const { default: mongoose } = require("mongoose");
 const { response } = require("express");
 const { translate } = require("@vitalets/google-translate-api");
-
+const notificationMsg = require("../models/notificationMsg");
 async function postBookmarkHandler(req, res) {
   let blog = await Blog.findById(req.params.blogId);
   let user = await User.findById(req.params.userId);
@@ -48,10 +48,12 @@ async function getBookmarkHandler(req, res) {
   user.bookmarks = user.bookmarks.sort(
     (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
   );
+  const notificationMessages = await notificationMsg.find({recipientId: req.user._id}) 
   return res.render("bookmarks", {
     user: req.user,
     currentRoute: "/bookmarks",
     bookmarks: user.bookmarks,
+    notificationMessages
   });
 }
 async function delBookmarkHandler(req, res) {
@@ -111,9 +113,11 @@ async function postCommentHandler(req, res) {
 }
 async function getUpdateBlogHandler(req, res) {
   const blog = await Blog.findById(req.params.id);
+  const notificationMessages = await notificationMsg.find({recipientId: req.user._id}) 
   return res.render("updateBlog", {
     blog,
     currentRoute: "/updateBlog",
+    notificationMessages
   });
 }
 async function postUpdateBlogHandler(req, res) {
@@ -126,9 +130,11 @@ async function postUpdateBlogHandler(req, res) {
   return res.redirect(`/blog/${req.params.id}/${blog.createdBy._id}`);
 }
 async function getAddNewBlogHandler(req, res) {
+  const notificationMessages = await notificationMsg.find({recipientId: req.user._id}) 
   return res.render("addBlog", {
     user: req.user,
     currentRoute: "/add-new",
+    notificationMessages
   });
 }
 async function getBlogHandler(req, res) {
@@ -173,6 +179,7 @@ console.log(text)
 translated.bool = true
 translated.text = text
   }
+  const notificationMessages = await notificationMsg.find({recipientId: req.user._id}) 
   return res.render("blog", {
     user: req.user,
     blog: blog,
@@ -180,7 +187,8 @@ translated.text = text
     currentRoute: "",
     likeUnlikeString,
     bookmarkBool,
-    translated
+    translated , 
+    notificationMessages
   });
   }
   async function postNewCommentHandler(req, res) {

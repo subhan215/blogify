@@ -147,6 +147,15 @@
                 >Bookmarks</a
               >
             </li>
+            <% if (locals.messageNotifications?.length > 0) { %>
+              <li>
+                <a
+                  class="dropdown-item dropdown-item-logout"
+                  href="/profile/<%= user._id %>/messageNotifications"
+                  >Message Notifications</a
+                >
+              </li>
+            <% } %>
           </ul>
         </li>
         <% } else { %>

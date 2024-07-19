@@ -185,7 +185,7 @@
                     <a href="/profile/<%= user._id %>/follow/<%= blogUser._id %>" class="btn btn-primary"><%= followUnfollowBool ? "Unfollow" : "Follow" %></a>
                 </div>
                 <div class="live-chat-button">
-                    <a href="/profile/<%= user._id %>/privateMessage">Live Chat</a>
+                    <a href="/profile/<%= blogUser._id %>/privateMessage">Chat</a>
                 </div>
             <% } %>
         </div>
@@ -199,7 +199,7 @@
                         <div class="user-card">
                             <img src="<%= follower.profileImageURL %>" alt="<%= follower.fullName %>'s profile image">
                             <div class="user-info">
-                                <p><%= follower.fullName %></p>
+                                <p><a href="/profile/<%= follower._id %>"><%= follower.fullName %></a></p>
                                 <p class="text-muted"><%= follower.email %></p>
                             </div>
                         </div>
@@ -211,7 +211,7 @@
                         <div class="user-card">
                             <img src="<%= following.profileImageURL %>" alt="<%= following.fullName %>'s profile image">
                             <div class="user-info">
-                                <p><%= following.fullName %></p>
+                                <p><a href="/profile/<%= following._id %>"><%= following.fullName %></a></p>
                                 <p class="text-muted"><%= following.email %></p>
                             </div>
                         </div>

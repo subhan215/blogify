@@ -14,11 +14,13 @@ async function getLatestNotificationsHandler(req , res) {
       latestNotifications[j] = notifications[i]
       j++
   } 
+  const messageNotifications = await notificationMsg.find({recipientId: req.user?._id})
   return res.render("notifications" , {
       notifications: latestNotifications , 
       currentRoute: "/notifications" , 
       user: req.user , 
-      text: "Latest"
+      text: "Latest" , 
+      messageNotifications
       
   })
 }
@@ -34,11 +36,13 @@ async function getAllNotificationsHandler(req , res) {
       latestNotifications[j] = notifications[i]
       j++
   } 
+  const messageNotifications = await notificationMsg.find({recipientId: req.user?._id})
   return res.render("notifications" , {
       notifications: latestNotifications , 
       currentRoute: "/notifications" , 
       user: req.user , 
-      text: "All"
+      text: "All" , 
+      messageNotifications
       
   })
 }
