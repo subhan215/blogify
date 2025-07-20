@@ -2,143 +2,486 @@
 <html lang="en">
 <head>
     <%- include('./partials/head') %>
-    <title>Private Messaging</title>
-    <!-- Include Bootstrap CSS -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Include Font Awesome -->
-    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css">
+    <title>Chat - Blogify</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         body {
-            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8f9fa;
-            color: #495057;
-            padding-top: 60px; /* Adjust as per your navbar height */
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #fafafa;
+            color: #242424;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
         }
+
         .chat-container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            border: 1px solid #ced4da;
-            border-radius: 8px;
-            background-color: #ffffff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            height: calc(100vh - 4rem);
+            display: flex;
+            flex-direction: column;
         }
-        .chat-box {
-            height: 400px; /* Adjust height based on your design */
-            overflow-y: scroll;
-            padding: 10px;
-            border: 1px solid #ced4da;
-            border-radius: 8px;
-            background-color: #f3f4f6;
+
+        .chat-header {
+            background: white;
+            border-radius: 12px 12px 0 0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            border-bottom: 1px solid #e6e6e6;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
+
+        .chat-header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .back-button {
+            background: none;
+            border: none;
+            color: #6b6b6b;
+            font-size: 1.25rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: rgba(26, 137, 23, 0.1);
+            color: #1a8917;
+        }
+
+        .chat-user-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: #1a8917;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .chat-user-info h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #242424;
+            margin: 0 0 0.25rem 0;
+        }
+
+        .chat-user-status {
+            font-size: 0.875rem;
+            color: #6b6b6b;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+        }
+
+        .chat-body {
+            background: white;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            background: #f8f9fa;
+        }
+
         .message {
-            margin-bottom: 10px;
-            padding: 8px 12px;
-            border-radius: 8px;
-            background-color: #007bff;
-            color: #ffffff;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: flex-end;
+            gap: 0.75rem;
+        }
+
+        .message.sender {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #1a8917;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.875rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .message.sender .message-avatar {
+            background: #6b6b6b;
+        }
+
+        .message-content {
             max-width: 70%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message-bubble {
+            padding: 0.75rem 1rem;
+            border-radius: 18px;
+            position: relative;
             word-wrap: break-word;
         }
-        .message.sender {
-            background-color: #28a745;
-            margin-left: auto;
+
+        .message.sender .message-bubble {
+            background: #1a8917;
+            color: white;
+            border-bottom-right-radius: 4px;
         }
+
+        .message:not(.sender) .message-bubble {
+            background: white;
+            color: #242424;
+            border: 1px solid #e6e6e6;
+            border-bottom-left-radius: 4px;
+        }
+
         .message-text {
-            margin-left: 10px;
-            font-size: 14px;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            margin-bottom: 0.25rem;
         }
-        .message-sender {
-            font-size: 12px;
-            font-weight: bold;
+
+        .message-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            opacity: 0.7;
         }
+
         .message-time {
-            font-size: 10px;
-            color: lightskyblue;
-            text-align: right;
+            color: inherit;
         }
+
         .message-status {
-            text-align: right;
-            margin-top: 5px;
-            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
         }
+
         .message-status i {
-            margin-left: 5px;
-            color: lightskyblue;
+            font-size: 0.75rem;
         }
-        .seen {
-            color: #28a745;
+
+        .message-status .seen {
+            color: #10b981;
         }
-        .unseen {
-            color: #868e96;
+
+        .message-status .unseen {
+            color: inherit;
         }
+
+        .chat-input {
+            background: white;
+            border-radius: 0 0 12px 12px;
+            padding: 1.5rem;
+            border-top: 1px solid #e6e6e6;
+        }
+
         .input-group {
-            margin-top: 20px;
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-end;
         }
-        .input-group .form-control {
-            border-radius: 0.375rem 0 0 0.375rem;
+
+        .message-input {
+            flex: 1;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e6e6e6;
+            border-radius: 24px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            resize: none;
+            outline: none;
+            transition: border-color 0.2s ease;
+            max-height: 120px;
+            min-height: 44px;
         }
-        .input-group .btn {
-            border-radius: 0 0.375rem 0.375rem 0;
+
+        .message-input:focus {
+            border-color: #1a8917;
+        }
+
+        .send-button {
+            background: #1a8917;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .send-button:hover {
+            background: #0f7a0d;
+            transform: scale(1.05);
+        }
+
+        .send-button:disabled {
+            background: #6b6b6b;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .empty-chat {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            color: #6b6b6b;
+        }
+
+        .empty-chat i {
+            font-size: 3rem;
+            color: #cbd5e1;
+            margin-bottom: 1rem;
+        }
+
+        .empty-chat h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #242424;
+        }
+
+        .empty-chat p {
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .typing-indicator {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            color: #6b6b6b;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .chat-container {
+                margin: 1rem auto;
+                height: calc(100vh - 2rem);
+            }
+
+            .message-content {
+                max-width: 85%;
+            }
+
+            .chat-header {
+                padding: 1rem;
+            }
+
+            .chat-messages {
+                padding: 1rem;
+            }
+
+            .chat-input {
+                padding: 1rem;
+            }
+        }
+
+        /* Scrollbar styling */
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
         }
     </style>
 </head>
 <body>
-    <!-- Navbar (Assuming it's included in partials/nav) -->
     <%- include('./partials/nav') %>
-    <div class="container chat-container">
-        <h1 class="text-center mb-4">Private Messaging</h1>
-        <div class="chat-box" id="chatBox">
-            <% messages.forEach(message => { %>
-                <div class="<%= message.senderId == user._id ? "message sender" : "message" %>">
-                    <div class="message-text">
-                        <span class="message-sender"><%= message.senderName === user.fullName ? "You" : message.senderName %></span><br>
-                        <%= message.content %>
-                        <div class="message-time"><%= new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) %></div>
-                        <% if (message.senderId == locals.user._id) { %>
-                            <div class="message-status">
-                                <i class="fas <%= message.delivered ? 'fa-check-double seen' : 'fa-check unseen' %>"></i>
-                            </div>
-                        <% } %>
+
+    <div class="chat-container">
+        <div class="chat-header">
+            <div class="chat-header-left">
+                <button class="back-button" onclick="window.location.href='/chats'">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <div class="chat-user-avatar">
+                    <%= otherUser.fullName ? otherUser.fullName.charAt(0).toUpperCase() : otherUser.username.charAt(0).toUpperCase() %>
+                </div>
+                <div class="chat-user-info">
+                    <h2><%= otherUser.fullName || otherUser.username %></h2>
+                    <div class="chat-user-status">
+                        <div class="status-indicator" id="statusIndicator"></div>
+                        <span id="statusText">Checking status...</span>
                     </div>
                 </div>
-            <% }) %>
+            </div>
         </div>
-        <div class="input-group">
-            <input type="text" id="message" class="form-control" placeholder="Enter message..." />
-            <input type="hidden" id="currentUser" value="<%= user?._id %>">
-            <input type="hidden" id="toSendUser" value="<%= blogUser?._id %>">
-            <div class="input-group-append">
-                <button id="sendBtn" class="btn btn-primary">Send</button>
+
+        <div class="chat-body">
+            <div class="chat-messages" id="chatBox">
+                <% if (messages.length === 0) { %>
+                    <div class="empty-chat">
+                        <i class="fas fa-comments"></i>
+                        <h3>Start a conversation</h3>
+                        <p>Send a message to begin chatting with <%= otherUser.fullName || otherUser.username %></p>
+                    </div>
+                <% } else { %>
+                    <% messages.forEach(message => { %>
+                        <% 
+                          console.log('Message senderId:', message.senderId);
+                          console.log('User ID:', locals.user._id);
+                          const isSender = message.senderId._id ? message.senderId._id.toString() === locals.user._id.toString() : message.senderId.toString() === locals.user._id.toString();
+                        %>
+                        <div class="message <%= isSender ? 'sender' : '' %>">
+                            <div class="message-avatar">
+                                <%= isSender ? (locals.user.fullName ? locals.user.fullName.charAt(0).toUpperCase() : locals.user.username.charAt(0).toUpperCase()) : (otherUser.fullName ? otherUser.fullName.charAt(0).toUpperCase() : otherUser.username.charAt(0).toUpperCase()) %>
+                            </div>
+                            <div class="message-content">
+                                <div class="message-bubble">
+                                    <div class="message-text">
+                                        <%= message.content %>
+                                    </div>
+                                    <div class="message-meta">
+                                        <span class="message-time">
+                                            <%= new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) %>
+                                        </span>
+                                        <% if (isSender) { %>
+                                            <div class="message-status">
+                                                <i class="fas <%= message.delivered ? 'fa-check-double seen' : 'fa-check unseen' %>"></i>
+                                            </div>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <% }) %>
+                <% } %>
+            </div>
+
+            <div class="chat-input">
+                <div class="input-group">
+                    <textarea 
+                        id="message" 
+                        class="message-input" 
+                        placeholder="Type your message..." 
+                        rows="1"
+                        maxlength="500"
+                    ></textarea>
+                    <button id="sendBtn" class="send-button">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Include Scripts (Assuming it's included in partials/scripts) -->
+    <input type="hidden" id="currentUser" value="<%= locals.user?._id %>">
+    <input type="hidden" id="toSendUser" value="<%= otherUser?._id %>">
+    <input type="hidden" id="chatId" value="<%= chat?._id %>">
+
     <%- include('./partials/scripts') %>
-    <!-- Include Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
+    
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const socket = io();
             const userId = document.getElementById("currentUser").value;
             const recipientId = document.getElementById("toSendUser").value;
+            const chatId = document.getElementById("chatId").value;
             const chatBox = document.getElementById("chatBox");
+            const messageInput = document.getElementById("message");
+            const sendBtn = document.getElementById("sendBtn");
+            const statusIndicator = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('statusText');
 
             socket.emit('register', userId);
+            
+            // Check if recipient is online
+            socket.emit('check_online_status', recipientId);
 
-            // Send a private message
-            document.getElementById('sendBtn').addEventListener('click', () => {
-                const message = document.getElementById('message').value;
-                if (message.trim() !== '') {
-                    socket.emit('private_message', { senderId: userId, recipientId, message });
-                    addMessage('You', message, true);
-                    document.getElementById('message').value = '';
+            // Auto-resize textarea
+            messageInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+            });
+
+            // Send message on Enter (but allow Shift+Enter for new line)
+            messageInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
                 }
             });
+
+            // Send message on button click
+            sendBtn.addEventListener('click', sendMessage);
+
+            function sendMessage() {
+                const message = messageInput.value.trim();
+                if (message !== '') {
+                    // Send via HTTP POST to save to database
+                    fetch(`/chat/${chatId}/message`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ content: message })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Also emit via socket for real-time delivery
+                            socket.emit('private_message', { 
+                                senderId: userId, 
+                                recipientId, 
+                                message,
+                                chatId: chatId
+                            });
+                            
+                            addMessage('You', message, true);
+                            messageInput.value = '';
+                            messageInput.style.height = 'auto';
+                            sendBtn.disabled = true;
+                            setTimeout(() => sendBtn.disabled = false, 1000);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error sending message:', error);
+                    });
+                }
+            }
 
             // Receive a private message
             socket.on('private_message', (data) => {
@@ -146,21 +489,53 @@
                 addMessage(sender, message, false);
             });
 
+            // Handle online status response
+            socket.on('online_status', (data) => {
+                const { userId: targetUserId, isOnline } = data;
+                if (targetUserId === recipientId) {
+                    updateOnlineStatus(isOnline);
+                }
+            });
+
+            // Handle user going online/offline
+            socket.on('user_status_change', (data) => {
+                const { userId: targetUserId, isOnline } = data;
+                if (targetUserId === recipientId) {
+                    updateOnlineStatus(isOnline);
+                }
+            });
+
             // Function to add messages to the chat box
             function addMessage(sender, message, isSender) {
                 const messageClass = isSender ? 'message sender' : 'message';
+                const avatarText = isSender ? '<%= locals.user.fullName ? locals.user.fullName.charAt(0).toUpperCase() : locals.user.username.charAt(0).toUpperCase() %>' : '<%= otherUser.fullName ? otherUser.fullName.charAt(0).toUpperCase() : otherUser.username.charAt(0).toUpperCase() %>';
+                const avatarClass = isSender ? 'background: #6b6b6b;' : 'background: #1a8917;';
+                
                 const messageHtml = `
                     <div class="${messageClass}">
-                        <div class="message-text">
-                            <span class="message-sender">${sender}</span><br>
-                            ${message}
-                            <div class="message-time">${formatTime(new Date())}</div>
-                            ${isSender ? `<div class="message-status"><i class="fas fa-check unseen"></i></div>` : ''}
+                        <div class="message-avatar" style="${avatarClass}">
+                            ${avatarText}
+                        </div>
+                        <div class="message-content">
+                            <div class="message-bubble">
+                                <div class="message-text">${message}</div>
+                                <div class="message-meta">
+                                    <span class="message-time">${formatTime(new Date())}</span>
+                                    ${isSender ? '<div class="message-status"><i class="fas fa-check unseen"></i></div>' : ''}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 `;
+                
+                // Remove empty state if it exists
+                const emptyChat = chatBox.querySelector('.empty-chat');
+                if (emptyChat) {
+                    emptyChat.remove();
+                }
+                
                 chatBox.innerHTML += messageHtml;
-                chatBox.scrollTop = chatBox.scrollHeight; // Scroll to bottom
+                chatBox.scrollTop = chatBox.scrollHeight;
             }
 
             // Function to format time as HH:MM
@@ -169,6 +544,20 @@
                 const minutes = date.getMinutes().toString().padStart(2, '0');
                 return `${hours}:${minutes}`;
             }
+
+            // Function to update online status
+            function updateOnlineStatus(isOnline) {
+                if (isOnline) {
+                    statusIndicator.style.background = '#10b981';
+                    statusText.textContent = 'Online';
+                } else {
+                    statusIndicator.style.background = '#6b6b6b';
+                    statusText.textContent = 'Offline';
+                }
+            }
+
+            // Scroll to bottom on load
+            chatBox.scrollTop = chatBox.scrollHeight;
         });
     </script>
 </body>

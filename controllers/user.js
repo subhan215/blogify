@@ -1,6 +1,7 @@
 const Blog = require("../models/blog");
 const Comment = require("../models/comment");
 const User = require("../models/user");
+const notificationMsg = require("../models/notificationMsg");
 
 async function getLatestNotificationsHandler(req , res) {
     let user  = await User.findById(req.params.userId); 
@@ -86,15 +87,57 @@ async function getSignInPage(req  , res) {
 }
 async function postUser(req , res) {
     const { fullName, email, password } = req.body;
-    await User.create({
-      fullName,
-      email,
-      password,
-      followers: [] , 
-      following: [] , 
-      profileImageURL: `/uploads/${req.file.filename}`
-    });
-    return res.redirect("/");
+    
+    try {
+        // Check if user already exists
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.render("signup", {
+                error: "An account with this email already exists. Please use a different email or sign in.",
+                currentRoute: "/user/signup",
+                formData: { fullName, email } // Preserve form data except password
+            });
+        }
+
+        await User.create({
+            fullName,
+            email,
+            password,
+            followers: [], 
+            following: [], 
+            profileImageURL: `/uploads/${req.file.filename}`
+        });
+        
+        return res.redirect("/");
+    } catch (error) {
+        console.error("Signup error:", error);
+        
+        // Handle MongoDB duplicate key error
+        if (error.code === 11000 && error.keyPattern && error.keyPattern.email) {
+            return res.render("signup", {
+                error: "An account with this email already exists. Please use a different email or sign in.",
+                currentRoute: "/user/signup",
+                formData: { fullName, email } // Preserve form data except password
+            });
+        }
+        
+        // Handle other validation errors
+        if (error.name === 'ValidationError') {
+            const validationErrors = Object.values(error.errors).map(err => err.message);
+            return res.render("signup", {
+                error: validationErrors.join(", "),
+                currentRoute: "/user/signup",
+                formData: { fullName, email } // Preserve form data except password
+            });
+        }
+        
+        // Handle general errors
+        return res.render("signup", {
+            error: "Something went wrong. Please try again.",
+            currentRoute: "/user/signup",
+            formData: { fullName, email } // Preserve form data except password
+        });
+    }
 }
 async function postSignIn(req , res) {
     const { email, password } = req.body;
@@ -105,7 +148,8 @@ async function postSignIn(req , res) {
   } catch (error) {
         return res.render("signin" , {
             error: "Incorrect Email Or Password!" , 
-            currentRoute: "/signin"
+            currentRoute: "/signin",
+            formData: { email } // Preserve email for convenience
         })
   }
 }

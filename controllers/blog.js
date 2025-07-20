@@ -6,7 +6,11 @@ const { default: mongoose } = require("mongoose");
 const { response } = require("express");
 const { translate } = require("@vitalets/google-translate-api");
 const notificationMsg = require("../models/notificationMsg");
+const TranslationCache = require("../models/translationCache");
 async function postBookmarkHandler(req, res) {
+  if (!req.user) {
+    return res.redirect('/user/signin');
+  }
   let blog = await Blog.findById(req.params.blogId);
   let user = await User.findById(req.params.userId);
   let bookmarkIncluded = false;
@@ -48,7 +52,7 @@ async function getBookmarkHandler(req, res) {
   user.bookmarks = user.bookmarks.sort(
     (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
   );
-  const notificationMessages = await notificationMsg.find({recipientId: req.user._id}) 
+  const notificationMessages = req.user ? await notificationMsg.find({recipientId: req.user._id}) : [];
   return res.render("bookmarks", {
     user: req.user,
     currentRoute: "/bookmarks",
@@ -57,6 +61,9 @@ async function getBookmarkHandler(req, res) {
   });
 }
 async function delBookmarkHandler(req, res) {
+  if (!req.user) {
+    return res.redirect('/user/signin');
+  }
   let user = await User.findById(req.params.userId);
   let index = -1;
   for (i = 0; i < user.bookmarks.length; i++) {
@@ -85,6 +92,9 @@ async function likeBookmarkHandler(req, res) {
   return res.redirect(`/blog/${req.params.userId}/bookmarks`);
 }
 async function likeBookmarkHandler(req, res) {
+  if (!req.user) {
+    return res.redirect('/user/signin');
+  }
   const blog = await Blog.findById(req.params.blogId);
   if (!blog.likes.includes(req.user._id)) {
     blog.likes.push(req.user._id);
@@ -96,11 +106,17 @@ async function likeBookmarkHandler(req, res) {
   return res.redirect(`/blog/${req.params.blogId}/${req.user._id}`);
 }
 async function delUserHandler(req, res) {
+  if (!req.user) {
+    return res.redirect('/user/signin');
+  }
   const blog = await Blog.findByIdAndDelete(req.params.id);
   console.log("blog:", blog);
   return res.redirect("/");
 }
 async function postCommentHandler(req, res) {
+  if (!req.user) {
+    return res.redirect('/user/signin');
+  }
   const comment = await Comment.findById(req.params.commentId);
   if (!comment.likes.includes(req.user._id)) {
     comment.likes.push(req.user._id);
@@ -112,8 +128,11 @@ async function postCommentHandler(req, res) {
   return res.redirect(`/blog/${req.params.blogId}/${req.user._id}`);
 }
 async function getUpdateBlogHandler(req, res) {
+  if (!req.user) {
+    return res.redirect('/user/signin');
+  }
   const blog = await Blog.findById(req.params.id);
-  const notificationMessages = await notificationMsg.find({recipientId: req.user._id}) 
+  const notificationMessages = req.user ? await notificationMsg.find({recipientId: req.user._id}) : [];
   return res.render("updateBlog", {
     blog,
     currentRoute: "/updateBlog",
@@ -121,6 +140,9 @@ async function getUpdateBlogHandler(req, res) {
   });
 }
 async function postUpdateBlogHandler(req, res) {
+  if (!req.user) {
+    return res.redirect('/user/signin');
+  }
   const { updBody, updTitle } = req.body;
   console.log(updBody, updTitle);
   const blog = await Blog.findByIdAndUpdate(req.params.id, {
@@ -130,7 +152,10 @@ async function postUpdateBlogHandler(req, res) {
   return res.redirect(`/blog/${req.params.id}/${blog.createdBy._id}`);
 }
 async function getAddNewBlogHandler(req, res) {
-  const notificationMessages = await notificationMsg.find({recipientId: req.user._id}) 
+  if (!req.user) {
+    return res.redirect('/user/signin');
+  }
+  const notificationMessages = req.user ? await notificationMsg.find({recipientId: req.user._id}) : [];
   return res.render("addBlog", {
     user: req.user,
     currentRoute: "/add-new",
@@ -168,18 +193,52 @@ async function getBlogHandler(req, res) {
     }
   }
   let translateTo = req.query.translate
+  console.log("Translation request:", translateTo);
+  console.log("Available languages:", Object.keys(langs));
+  
   let translated = {
     bool: false , 
     text: ""
   }
   if(translateTo) {
-    const { text } = await translate(blog.body, { to: langs[translateTo] });
+    console.log("Attempting to translate to:", translateTo);
+    console.log("Language code:", langs[translateTo]);
+    
+    try {
+      // First, check if translation exists in cache
+      const cachedTranslation = await TranslationCache.findOne({
+        blogId: blog._id,
+        targetLanguage: translateTo
+      });
 
-console.log(text) 
-translated.bool = true
-translated.text = text
+      if (cachedTranslation) {
+        console.log("Translation found in cache for:", translateTo);
+        translated.bool = true;
+        translated.text = cachedTranslation.translatedContent;
+      } else {
+        console.log("Translation not in cache, calling API for:", translateTo);
+        const { text } = await translate(blog.body, { to: langs[translateTo] });
+        console.log("Translation successful:", text.substring(0, 100) + "...");
+        
+        // Cache the translation for future use
+        await TranslationCache.create({
+          blogId: blog._id,
+          targetLanguage: translateTo,
+          translatedContent: text,
+          originalContent: blog.body
+        });
+        console.log("Translation cached successfully for:", translateTo);
+        
+        translated.bool = true;
+        translated.text = text;
+      }
+    } catch (error) {
+      console.error("Translation error:", error);
+      translated.bool = false;
+      translated.text = "Translation failed. Please try again.";
+    }
   }
-  const notificationMessages = await notificationMsg.find({recipientId: req.user._id}) 
+  const notificationMessages = req.user ? await notificationMsg.find({recipientId: req.user._id}) : [];
   return res.render("blog", {
     user: req.user,
     blog: blog,
@@ -187,11 +246,15 @@ translated.text = text
     currentRoute: "",
     likeUnlikeString,
     bookmarkBool,
-    translated , 
+    translated,
+    currentTranslate: req.query.translate || "",
     notificationMessages
   });
   }
   async function postNewCommentHandler(req, res) {
+    if (!req.user) {
+      return res.redirect('/user/signin');
+    }
     await Comment.create({
         content: req.body.content,
         blogId: req.params.blogId,
@@ -200,12 +263,18 @@ translated.text = text
       return res.redirect(`/blog/${req.params.blogId}/${req.user._id}`);
   }
   async function delCommentHandler(req , res) {
+    if (!req.user) {
+      return res.redirect('/user/signin');
+    }
     const comment = await Comment.findById(req.params.id);
   const blogId = comment.blogId;
   await Comment.findByIdAndDelete(req.params.id);
   return res.redirect(`/blog/${blogId}/${req.params.userId}`);
   }
   async function postUpdateCommentHandler(req , res) {
+    if (!req.user) {
+      return res.redirect('/user/signin');
+    }
     const { updatedComment } = req.body;
   const comment = await Comment.findByIdAndUpdate(req.params.commentId, {
     content: updatedComment,
@@ -213,6 +282,9 @@ translated.text = text
   return res.redirect(`/blog/${req.params.blogId}/${comment.createdBy._id}`);
   }
 async function postBlogHandler(req, res) {
+    if (!req.user) {
+      return res.redirect('/user/signin');
+    }
     const { title, body } = req.body;
   const blog = await Blog.create({
     body,

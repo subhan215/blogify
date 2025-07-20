@@ -2,278 +2,722 @@
 <html lang="en">
   <head>
     <%- include('./partials/head') %>
-    <title>Home Page</title>
+    <title>Blogify - Discover Amazing Stories</title>
     <!-- Include Bootstrap CSS -->
-    <link
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #1a8917;
+            --primary-dark: #0f7a0d;
+            --secondary-color: #6b6b6b;
+            --accent-color: #ffc017;
+            --success-color: #1a8917;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
+            --light-bg: #fafafa;
+            --dark-bg: #242424;
+            --text-primary: #242424;
+            --text-secondary: #6b6b6b;
+            --text-muted: #959595;
+            --border-color: #e6e6e6;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            --shadow-md: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+            --shadow-lg: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
       body {
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        background-color: #f8f9fa;
-        color: #495057;
-      }
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #ffffff;
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
 
-      /* Navbar Styling */
-      .navbar {
-        background-color: #343a40;
-      }
-      .navbar-brand,
-      .nav-link {
-        color: white !important;
-      }
-      .navbar-brand:hover,
-      .nav-link:hover {
-        color: #28a745 !important;
-      }
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
 
-      /* Form Styling */
-      .form-group {
-        margin-bottom: 1.5rem;
-      }
-      label {
-        font-weight: bold;
-      }
-      select,
-      input[type="text"],
-      button {
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="10" cy="60" r="0.5" fill="rgba(255,255,255,0.1)"/><circle cx="90" cy="40" r="0.5" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+            font-weight: 400;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-top: 2rem;
+        }
+
+        .hero-stat {
+            text-align: center;
+        }
+
+        .hero-stat-number {
+            font-size: 2rem;
+            font-weight: 700;
         display: block;
-        width: 100%;
-        padding: 0.75rem;
-        margin-top: 0.5rem;
-        font-size: 1rem;
-        border: 1px solid #ced4da;
-        border-radius: 0.25rem;
-        transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-      }
-      select:focus,
-      input[type="text"]:focus,
-      button:focus {
-        border-color: #28a745;
-        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
-      }
-      button[type="submit"] {
-        background-color: #28a745;
-        color: white;
-        font-weight: bold;
-        cursor: pointer;
-      }
-      button[type="submit"]:hover {
-        background-color: #218838;
-        border-color: #1e7e34;
-      }
+        }
 
-      /* Card Styling */
-      .card {
-        margin-bottom: 30px;
-        border: none;
+        .hero-stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* Search and Filter Section */
+        .search-filter-section {
+            background: white;
+            padding: 2rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .search-filter-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .search-filter-form {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            margin: 0;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--border-color);
         border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-      }
-      .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-      }
-      .card img {
-        height: 200px;
-        object-fit: cover;
-        border-top-left-radius: 8px;
-        border-top-right-radius: 8px;
-        transition: transform 0.3s ease-in-out;
-      }
-      .card:hover img {
-        transform: scale(1.1);
-      }
-      .card-title {
-        font-weight: bold;
-        margin-bottom: 0.5rem;
-        text-align: center;
-      }
-      .card-body {
-        padding: 1.5rem;
-      }
-      .btn-primary {
-        background-color: #28a745;
-        border-color: #28a745;
-        padding: 10px 20px;
-        font-size: 1em;
-        font-weight: bold;
-        display: block;
-        margin: 0 auto;
-        transition: background-color 0.3s, border-color 0.3s;
-      }
-      .myBtn {
-        width: 100px;
-      }
-      .btn-primary:hover {
-        background-color: #218838;
-        border-color: #1e7e34;
-      }
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s ease;
+            background: white;
+        }
 
-      /* Container and Row */
-      .container {
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(26, 137, 23, 0.1);
+        }
+
+        .btn {
+            padding: 0.875rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            background: rgba(26, 137, 23, 0.05);
+        }
+
+        /* Blog Cards Section */
+        .blogs-section {
+            padding: 3rem 0;
+            background: var(--light-bg);
+        }
+
+        .blogs-container {
         max-width: 1200px;
         margin: 0 auto;
-        padding: 2rem 1rem;
-      }
-      .row {
-        display: flex;
-        flex-wrap: wrap;
-        margin: -15px;
-      }
-      .col-md-3 {
-        padding: 15px;
-      }
+            padding: 0 2rem;
+        }
 
-      /* Utility Classes */
-      .mt-5 {
-        margin-top: 3rem !important;
-      }
-      .text-center {
-        text-align: center !important;
-      }
-      .stretched-link {
-        position: relative;
-        z-index: 1;
-      }
-      .stretched-link::after {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        bottom: 0;
-        right: 0;
-        z-index: 0;
-      }
-    
-      .filter-search-container {
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .blogs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .blog-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+
+        .blog-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .blog-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .blog-card:hover .blog-image {
+            transform: scale(1.05);
+        }
+
+        .blog-content {
+            padding: 1.5rem;
+        }
+
+        .blog-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .blog-meta {
     display: flex;
-    justify-content: center;
     align-items: center;
-    gap: 20px; /* Adjust the gap between filter and search as needed */
-    padding: 10px; /* Adjust the padding as needed */
-    width: 100%;
-}
+            gap: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
 
-.filter, .search {
+        .blog-meta-item {
     display: flex;
     align-items: center;
-    gap: 10px; /* Adjust the gap between elements inside filter and search */
+            gap: 0.25rem;
+        }
+
+        .blog-excerpt {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .blog-read-btn {
     width: 100%;
-}
+            padding: 0.75rem 1rem;
+            background: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-align: center;
+            transition: all 0.2s ease;
+            display: inline-block;
+        }
 
-.filter input, .search input {
-    padding: 10px;
-    font-size: 16px; /* Adjust the font size as needed */
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    flex: 1;
-}
+        .blog-read-btn:hover {
+            background: var(--primary-dark);
+            color: white;
+            text-decoration: none;
+            transform: translateY(-1px);
+        }
 
-.search button {
-    padding: 10px 20px;
-    font-size: 16px; /* Adjust the font size as needed */
-    background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-secondary);
+        }
 
-.search button:hover {
-    background-color: #218838; /* Adjust hover color as needed */
-}
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
 
+        .empty-state-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .empty-state-text {
+            font-size: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Responsive Design */
 @media (max-width: 768px) {
-    .filter-search-container {
-        flex-direction: column;
-        gap: 10px; /* Adjust the gap for mobile view */
-    }
+            .hero-title {
+                font-size: 2.5rem;
+            }
 
-    .filter input, .search input, .search button {
-        flex: none; /* Adjust flex property for mobile view */
-        width: 100%;
-    }
-}
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+
+            .hero-stats {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+
+            .search-filter-form {
+        flex-direction: column;
+                gap: 1rem;
+            }
+
+            .form-group {
+                min-width: 100%;
+            }
+
+            .blogs-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .blogs-container {
+                padding: 0 1rem;
+            }
+
+            .search-filter-container {
+                padding: 0 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-section {
+                padding: 3rem 0;
+            }
+
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 2px solid transparent;
+            border-top: 2px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Pagination Styles */
+        .pagination-container {
+            margin-top: 3rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .pagination-info {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .pagination-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .pagination-btn {
+            padding: 0.5rem 1rem;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .pagination-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            transform: translateY(-1px);
+        }
+
+        .pagination-numbers {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .pagination-number {
+            padding: 0.5rem 0.75rem;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            min-width: 2.5rem;
+            text-align: center;
+        }
+
+        .pagination-number:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .pagination-number.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .pagination-ellipsis {
+            padding: 0.5rem 0.25rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 768px) {
+            .pagination-controls {
+                gap: 0.25rem;
+            }
+
+            .pagination-btn {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.8rem;
+            }
+
+            .pagination-number {
+                padding: 0.5rem 0.5rem;
+                min-width: 2rem;
+                font-size: 0.8rem;
+            }
+        }
+
+    
 
     </style>
   </head>
   <body>
-    <!-- Navbar (Assuming it's included in partials/nav) -->
     <%- include('./partials/nav') %>
-    <div class="container filter-search-container ">
-      <div class="filter">
-        <div class="col-12">
-          <form action="/" method="get" class="mb-4">
-            <div class="form-group">
 
-              <select id="dropdown" name="filterBy" class="form-control">
-                <option value="" disabled selected>Select...</option>
-                <option value="Views">Views</option>
-                <option value="Likes">Likes</option>
-                <option value="Recent">Recent</option>
-              </select>
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title">Discover Amazing Stories</h1>
+            <p class="hero-subtitle">Explore thought-provoking articles, insights, and stories from writers around the world</p>
+            
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <span class="hero-stat-number"><%= typeof totalBlogs !== 'undefined' ? totalBlogs : blogs.length %></span>
+                    <span class="hero-stat-label">Stories</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-number">∞</span>
+                    <span class="hero-stat-label">Possibilities</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-number">24/7</span>
+                    <span class="hero-stat-label">Available</span>
             </div>
-            <div class="form-group">
-              <button type="submit" class="btn btn-primary myBtn">
-                Filter
-              </button>
             </div>
-          </form>
         </div>
-      </div>
+    </section>
 
-      <div class=" search">
-        <div class="col-12">
-          <form action="/" method="get" class="mb-4">
+    <!-- Search and Filter Section -->
+    <section class="search-filter-section">
+        <div class="search-filter-container">
+            <form class="search-filter-form" action="/" method="get">
             <div class="form-group">
               <input
                 type="text"
                 name="search"
                 class="form-control"
-                placeholder="Search..."
-              />
+                        placeholder="Search stories, authors, or topics..."
+                        value="<%= typeof search !== 'undefined' ? search : '' %>"
+                    >
             </div>
             <div class="form-group">
-              <button type="submit" class="btn btn-primary myBtn">
+                    <select name="filterBy" class="form-control">
+                        <option value="" <%= typeof filterBy === 'undefined' || filterBy === '' ? 'selected' : '' %>>All Stories</option>
+                        <option value="Recent" <%= typeof filterBy !== 'undefined' && filterBy === 'Recent' ? 'selected' : '' %>>Most Recent</option>
+                        <option value="Likes" <%= typeof filterBy !== 'undefined' && filterBy === 'Likes' ? 'selected' : '' %>>Most Liked</option>
+                        <option value="Views" <%= typeof filterBy !== 'undefined' && filterBy === 'Views' ? 'selected' : '' %>>Most Viewed</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-search"></i>
                 Search
               </button>
-            </div>
           </form>
         </div>
-      </div>
-    </div>
+    </section>
+
     <!-- Blog Cards Section -->
-    <div class="row">
+    <section class="blogs-section">
+        <div class="blogs-container">
+            <div class="section-header">
+                <h2 class="section-title">Featured Stories</h2>
+                <p class="section-subtitle">Discover the latest and most engaging content from our community</p>
+            </div>
+
+            <% if (blogs && blogs.length > 0) { %>
+                <div class="blogs-grid">
       <% blogs.forEach(blog => { %>
-      <div class="col-md-3">
-        <div class="card">
+                        <article class="blog-card">
           <img
             src="<%= blog.coverImageURL %>"
-            class="card-img-top"
-            alt="Blog cover image"
-          />
-          <div class="card-body">
-            <h5 class="card-title"><%= blog.title %></h5>
+                                alt="<%= blog.title %>" 
+                                class="blog-image"
+                                onerror="this.style.display='none'"
+                            >
+                            <div class="blog-content">
+                                <h3 class="blog-title"><%= blog.title %></h3>
+                                
+                                <div class="blog-meta">
+                                    <div class="blog-meta-item">
+                                        <i class="fas fa-user"></i>
+                                        <span><%= blog.createdBy ? blog.createdBy.name : 'Anonymous' %></span>
+                                    </div>
+                                    <div class="blog-meta-item">
+                                        <i class="fas fa-calendar"></i>
+                                        <span><%= new Date(blog.createdAt).toLocaleDateString() %></span>
+                                    </div>
+                                </div>
+
+                                <p class="blog-excerpt">
+                                    <%= blog.body ? blog.body.substring(0, 120) + '...' : 'No description available' %>
+                                </p>
+
             <a
               href="/blog/<%= blog._id %>/<%= locals.user ? locals.user._id : 'abc23521aa1bef45662212ad' %>"
-              class="btn btn-primary stretched-link"
-              >Read</a
-            >
-          </div>
-        </div>
-      </div>
-      <% }) %>
-    </div>
+                                    class="blog-read-btn"
+                                >
+                                    <i class="fas fa-book-open"></i>
+                                    Read Story
+                                </a>
+                            </div>
+                        </article>
+                    <% }) %>
+                </div>
 
-    <!-- Include Scripts (Assuming it's included in partials/scripts) -->
+
+            <% } else { %>
+                <div class="empty-state">
+                    <div class="empty-state-icon">
+                        <i class="fas fa-newspaper"></i>
+                    </div>
+                    <h3 class="empty-state-title">No Stories Found</h3>
+                    <p class="empty-state-text">
+                        <% if (typeof search !== 'undefined' && search) { %>
+                            No stories match your search "<%= search %>". Try different keywords or browse all stories.
+                        <% } else { %>
+                            Be the first to share your story with the world!
+                        <% } %>
+                    </p>
+                    <% if (locals.user) { %>
+                        <a href="/blog/add-new" class="btn btn-primary">
+                            <i class="fas fa-plus"></i>
+                            Write Your Story
+                        </a>
+                    <% } else { %>
+                        <a href="/user/signup" class="btn btn-primary">
+                            <i class="fas fa-user-plus"></i>
+                            Join Blogify
+                        </a>
+                    <% } %>
+          </div>
+            <% } %>
+        </div>
+    </section>
+
+    <!-- Pagination -->
+    <% if (typeof pagination !== 'undefined' && pagination.totalPages > 1) { %>
+        <div class="pagination-container">
+            <div class="pagination-info">
+                <span>Page <%= pagination.currentPage %> of <%= pagination.totalPages %></span>
+            </div>
+            <div class="pagination-controls">
+                <% if (pagination.hasPrevPage) { %>
+                    <a href="/?page=<%= pagination.prevPage %><%= typeof search !== 'undefined' && search ? '&search=' + search : '' %><%= typeof filterBy !== 'undefined' && filterBy ? '&filterBy=' + filterBy : '' %>" class="pagination-btn">
+                        <i class="fas fa-chevron-left"></i>
+                        Previous
+                    </a>
+                <% } %>
+                
+                <div class="pagination-numbers">
+                    <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+                        <% if (i === pagination.currentPage) { %>
+                            <span class="pagination-number active"><%= i %></span>
+                        <% } else if (i === 1 || i === pagination.totalPages || (i >= pagination.currentPage - 1 && i <= pagination.currentPage + 1)) { %>
+                            <a href="/?page=<%= i %><%= typeof search !== 'undefined' && search ? '&search=' + search : '' %><%= typeof filterBy !== 'undefined' && filterBy ? '&filterBy=' + filterBy : '' %>" class="pagination-number"><%= i %></a>
+                        <% } else if (i === pagination.currentPage - 2 || i === pagination.currentPage + 2) { %>
+                            <span class="pagination-ellipsis">...</span>
+                        <% } %>
+                    <% } %>
+                </div>
+                
+                <% if (pagination.hasNextPage) { %>
+                    <a href="/?page=<%= pagination.nextPage %><%= typeof search !== 'undefined' && search ? '&search=' + search : '' %><%= typeof filterBy !== 'undefined' && filterBy ? '&filterBy=' + filterBy : '' %>" class="pagination-btn">
+                        Next
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                <% } %>
+            </div>
+        </div>
+    <% } %>
+
     <%- include('./partials/scripts') %>
-    <!-- Include Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        // Add loading state to search form
+        const searchForm = document.querySelector('.search-filter-form');
+        const searchBtn = searchForm.querySelector('button[type="submit"]');
+
+        searchForm.addEventListener('submit', function() {
+            searchBtn.classList.add('loading');
+            searchBtn.disabled = true;
+        });
+
+        // Auto-submit on filter change
+        const filterSelect = document.querySelector('select[name="filterBy"]');
+        filterSelect.addEventListener('change', function() {
+            searchForm.submit();
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
   </body>
 </html>
