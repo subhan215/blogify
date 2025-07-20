@@ -5,10 +5,29 @@
     <title>Bookmarks - Blogify</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #1a8917;
+            --primary-dark: #0f7a0d;
+            --secondary-color: #6b6b6b;
+            --accent-color: #ffc017;
+            --success-color: #1a8917;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
+            --light-bg: #fafafa;
+            --dark-bg: #242424;
+            --text-primary: #242424;
+            --text-secondary: #6b6b6b;
+            --text-muted: #959595;
+            --border-color: #e6e6e6;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            --shadow-md: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+            --shadow-lg: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+        }
+
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #fafafa;
-            color: #242424;
+            background: var(--light-bg);
+            color: var(--text-primary);
             line-height: 1.6;
         }
 
@@ -26,24 +45,24 @@
         .page-title {
             font-size: 2rem;
             font-weight: 600;
-            color: #242424;
+            color: var(--text-primary);
             margin-bottom: 0.5rem;
         }
 
         .page-subtitle {
-            color: #6b6b6b;
+            color: var(--text-secondary);
             font-size: 1rem;
         }
 
         .bookmarks-card {
             background: white;
             border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--shadow-sm);
             overflow: hidden;
         }
 
         .card-header {
-            background: #1a8917;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
             color: white;
             padding: 1.5rem;
             text-align: center;
@@ -61,7 +80,7 @@
 
         .bookmark-item {
             padding: 1.5rem;
-            border-bottom: 1px solid #e6e6e6;
+            border-bottom: 1px solid var(--border-color);
             transition: background-color 0.2s ease;
         }
 
@@ -70,7 +89,7 @@
         }
 
         .bookmark-item:hover {
-            background: #fafafa;
+            background: var(--light-bg);
         }
 
         .bookmark-content {
@@ -87,7 +106,7 @@
         .bookmark-icon {
             width: 32px;
             height: 32px;
-            background: #1a8917;
+            background: var(--primary-color);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -100,24 +119,24 @@
         .bookmark-title {
             font-size: 1.125rem;
             font-weight: 600;
-            color: #242424;
+            color: var(--text-primary);
             margin-bottom: 0.25rem;
         }
 
         .bookmark-title a {
-            color: #1a8917;
+            color: var(--primary-color);
             text-decoration: none;
             transition: color 0.2s ease;
         }
 
         .bookmark-title a:hover {
-            color: #0f7a0d;
+            color: var(--primary-dark);
             text-decoration: underline;
         }
 
         .bookmark-meta {
             font-size: 0.875rem;
-            color: #6b6b6b;
+            color: var(--text-secondary);
         }
 
         .bookmark-actions {
@@ -140,28 +159,28 @@
         }
 
         .btn-primary {
-            background: #1a8917;
+            background: var(--primary-color);
             color: white;
         }
 
         .btn-primary:hover {
-            background: #0f7a0d;
+            background: var(--primary-dark);
             color: white;
         }
 
         .btn-outline {
             background: transparent;
-            color: #6b6b6b;
-            border: 1px solid #e6e6e6;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
         }
 
         .btn-outline:hover {
-            background: #fafafa;
-            color: #242424;
+            background: var(--light-bg);
+            color: var(--text-primary);
         }
 
         .btn-danger {
-            background: #e74c3c;
+            background: var(--danger-color);
             color: white;
         }
 
@@ -173,12 +192,12 @@
         .empty-state {
             text-align: center;
             padding: 3rem 1.5rem;
-            color: #6b6b6b;
+            color: var(--text-secondary);
         }
 
         .empty-state i {
             font-size: 2.5rem;
-            color: #cbd5e1;
+            color: var(--text-muted);
             margin-bottom: 1rem;
         }
 
@@ -186,7 +205,7 @@
             font-size: 1.125rem;
             font-weight: 600;
             margin-bottom: 0.5rem;
-            color: #242424;
+            color: var(--text-primary);
         }
 
         .empty-state p {
@@ -213,19 +232,19 @@
             padding: 1rem;
             background: white;
             border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--shadow-sm);
         }
 
         .stat-number {
             font-size: 1.5rem;
             font-weight: 700;
-            color: #1a8917;
+            color: var(--primary-color);
             display: block;
         }
 
         .stat-label {
             font-size: 0.875rem;
-            color: #6b6b6b;
+            color: var(--text-secondary);
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
@@ -290,10 +309,6 @@
                         <i class="fas fa-bookmark"></i>
                         <h3>No bookmarks yet</h3>
                         <p>Start saving your favorite articles to read them later.</p>
-                        <a href="/" class="btn btn-primary">
-                            <i class="fas fa-home"></i>
-                            Explore Articles
-                        </a>
                     </div>
                 <% } else { %>
                     <% bookmarks.forEach(bookmark => { %>
