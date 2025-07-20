@@ -2,6 +2,8 @@ const Blog = require("../models/blog");
 const Comment = require("../models/comment");
 const User = require("../models/user");
 const notificationMsg = require("../models/notificationMsg");
+const { uploadToCloudinary } = require("../config/cloudinary");
+const path = require("path");
 
 async function getLatestNotificationsHandler(req , res) {
     let user  = await User.findById(req.params.userId); 
@@ -99,13 +101,29 @@ async function postUser(req , res) {
             });
         }
 
+        let profileImageURL = '';
+        
+        // If a file was uploaded, upload it to Cloudinary
+        if (req.file) {
+            const filePath = path.join(__dirname, '..', 'public', 'uploads', req.file.filename);
+            const uploadResult = await uploadToCloudinary(filePath, 'blogify/profiles');
+            
+            if (uploadResult.success) {
+                profileImageURL = uploadResult.url;
+            } else {
+                console.error('Failed to upload image to Cloudinary:', uploadResult.error);
+                // Fallback to local file if Cloudinary upload fails
+                profileImageURL = `/uploads/${req.file.filename}`;
+            }
+        }
+        
         await User.create({
             fullName,
             email,
             password,
             followers: [], 
             following: [], 
-            profileImageURL: `/uploads/${req.file.filename}`
+            profileImageURL: profileImageURL
         });
         
         return res.redirect("/");

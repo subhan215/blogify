@@ -7,6 +7,8 @@ const { response } = require("express");
 const { translate } = require("@vitalets/google-translate-api");
 const notificationMsg = require("../models/notificationMsg");
 const TranslationCache = require("../models/translationCache");
+const { uploadToCloudinary } = require("../config/cloudinary");
+const path = require("path");
 async function postBookmarkHandler(req, res) {
   if (!req.user) {
     return res.redirect('/user/signin');
@@ -286,12 +288,29 @@ async function postBlogHandler(req, res) {
       return res.redirect('/user/signin');
     }
     const { title, body } = req.body;
-  const blog = await Blog.create({
-    body,
-    title,
-    createdBy: req.user._id,
-    coverImageURL: `/uploads/${req.file.filename}`,
-  });
+    
+    let coverImageURL = '';
+    
+    // If a file was uploaded, upload it to Cloudinary
+    if (req.file) {
+      const filePath = path.join(__dirname, '..', 'public', 'uploads', req.file.filename);
+      const uploadResult = await uploadToCloudinary(filePath, 'blogify/blogs');
+      
+      if (uploadResult.success) {
+        coverImageURL = uploadResult.url;
+      } else {
+        console.error('Failed to upload image to Cloudinary:', uploadResult.error);
+        // Fallback to local file if Cloudinary upload fails
+        coverImageURL = `/uploads/${req.file.filename}`;
+      }
+    }
+    
+    const blog = await Blog.create({
+      body,
+      title,
+      createdBy: req.user._id,
+      coverImageURL: coverImageURL,
+    });
   let user = await User.findById(req.user._id);
   const notifications = user.followers.map((follower) => {
     return User.findByIdAndUpdate(follower._id, {
