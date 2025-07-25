@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: blogify-app
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: true
+    # Prevent auto-sleep by setting a longer timeout
+    # Note: Free tier will still sleep after 15 minutes of inactivity
+    # This is a limitation of the free tier
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000 
