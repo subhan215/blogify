@@ -63,23 +63,22 @@ If you have another server or VPS running 24/7:
 3. Run: `npm run keep-alive`
 
 ### Option 3: GitHub Actions (Free)
-Create `.github/workflows/keep-alive.yml`:
+The workflow file `.github/workflows/keep-alive.yml` is already created. To set it up:
 
-```yaml
-name: Keep Render App Alive
+1. **Add GitHub Secret**:
+   - Go to your GitHub repository
+   - Click "Settings" → "Secrets and variables" → "Actions"
+   - Click "New repository secret"
+   - **Name**: `APP_URL`
+   - **Value**: `https://your-app-name.onrender.com` (replace with your actual Render URL)
+   - Click "Add secret"
 
-on:
-  schedule:
-    - cron: '*/14 * * * *'  # Every 14 minutes
+2. **Enable GitHub Actions**:
+   - Go to "Actions" tab in your repository
+   - The workflow will automatically start running every 14 minutes
+   - You can also manually trigger it from the Actions tab
 
-jobs:
-  ping:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Ping Render App
-        run: |
-          curl -f https://your-app-name.onrender.com/health || exit 1
-```
+The workflow will automatically ping your app every 14 minutes to keep it alive.
 
 ## Paid Solutions
 

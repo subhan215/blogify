@@ -11,13 +11,10 @@ jobs:
     steps:
       - name: Ping Render App
         run: |
-          # Replace with your actual Render URL
-          APP_URL="https://your-app-name.onrender.com"
-          
-          echo "Pinging $APP_URL/health at $(date)"
+          echo "Pinging ${{ secrets.APP_URL }}/health at $(date)"
           
           # Try to ping the health endpoint
-          response=$(curl -s -o /dev/null -w "%{http_code}" "$APP_URL/health" || echo "000")
+          response=$(curl -s -o /dev/null -w "%{http_code}" "${{ secrets.APP_URL }}/health" || echo "000")
           
           if [ "$response" = "200" ]; then
             echo "✅ App is alive and responding (Status: $response)"
@@ -27,5 +24,5 @@ jobs:
           fi
           
           # Also ping the root endpoint as backup
-          root_response=$(curl -s -o /dev/null -w "%{http_code}" "$APP_URL/" || echo "000")
+          root_response=$(curl -s -o /dev/null -w "%{http_code}" "${{ secrets.APP_URL }}/" || echo "000")
           echo "Root endpoint status: $root_response" 
