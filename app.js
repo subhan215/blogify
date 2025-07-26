@@ -340,6 +340,23 @@ app.use("/blog", blogRoute);
 app.use("/chats", chatRoute);
 app.use("/chat", chatRoute);
 
+// Health check endpoint to keep the service alive
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'OK',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
+
+// Root endpoint that also serves as a health check
+app.get('/', (req, res) => {
+  // This will be handled by your existing home route logic
+  // but adding a simple response here as fallback
+  res.status(200).send('Blogify API is running');
+});
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error('Error:', err.stack);

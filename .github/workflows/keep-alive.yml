@@ -1,0 +1,28 @@
+name: Keep Render App Alive
+
+on:
+  schedule:
+    - cron: '*/14 * * * *'  # Every 14 minutes
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Render App
+        run: |
+          echo "Pinging ${{ secrets.APP_URL }}/health at $(date)"
+          
+          # Try to ping the health endpoint
+          response=$(curl -s -o /dev/null -w "%{http_code}" "${{ secrets.APP_URL }}/health" || echo "000")
+          
+          if [ "$response" = "200" ]; then
+            echo "✅ App is alive and responding (Status: $response)"
+          else
+            echo "⚠️ App responded with status: $response"
+            # Don't fail the workflow, just log the issue
+          fi
+          
+          # Also ping the root endpoint as backup
+          root_response=$(curl -s -o /dev/null -w "%{http_code}" "${{ secrets.APP_URL }}/" || echo "000")
+          echo "Root endpoint status: $root_response" 
