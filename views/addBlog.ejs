@@ -472,7 +472,7 @@
                         <div class="form-text">Write from your heart. Your unique perspective is what makes your story special.</div>
                         <div class="char-counter">
                             <span class="char-count" id="bodyCount">0</span>
-                            <span class="char-limit">/ 5000 characters</span>
+                            <span class="char-limit">/ 10000 characters</span>
                         </div>
                     </div>
 
@@ -551,7 +551,7 @@
         bodyInput.addEventListener('input', function() {
             const count = this.value.length;
             bodyCount.textContent = count;
-            bodyCount.style.color = count > 4000 ? 'var(--warning-color)' : 'var(--text-muted)';
+            bodyCount.style.color = count > 8000 ? 'var(--warning-color)' : 'var(--text-muted)';
         });
 
         // Form submission with loading state

@@ -641,6 +641,157 @@
         .empty-state p {
             font-size: 0.875rem;
         }
+
+        /* Voice Reading Section */
+        .voice-reading-section {
+            background: var(--light-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border: 1px solid var(--border-color);
+        }
+
+        .voice-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .voice-settings {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .voice-settings select {
+            min-width: 150px;
+            font-size: 0.875rem;
+        }
+
+        .voice-settings input[type="range"] {
+            width: 100px;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--border-color);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .voice-settings input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+        }
+
+        .voice-settings input[type="range"]::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+            border: none;
+        }
+
+        #speedValue {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            min-width: 30px;
+        }
+
+
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Highlight currently spoken text */
+        .speaking {
+            background: rgba(26, 137, 23, 0.1);
+            border-radius: 4px;
+            padding: 2px 4px;
+        }
+
+        @media (max-width: 768px) {
+            .voice-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .voice-settings {
+                justify-content: center;
+            }
+        }
+
+        /* Custom Alert Styles */
+        .custom-alert {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .custom-alert-content {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            max-width: 400px;
+            width: 90%;
+            animation: alertSlideIn 0.3s ease-out;
+        }
+
+        @keyframes alertSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .custom-alert-header {
+            background: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .custom-alert-header i {
+            font-size: 1.2rem;
+        }
+
+        .custom-alert-body {
+            padding: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .custom-alert-footer {
+            padding: 1rem;
+            border-top: 1px solid var(--border-color);
+            text-align: right;
+        }
+
+        .custom-alert-footer .btn {
+            min-width: 80px;
+        }
     </style>
 </head>
 <body>
@@ -711,11 +862,54 @@
         <img src="<%= blog.coverImageURL %>" alt="Blog cover image" class="blog-cover"/>
 
         <!-- Blog Body -->
-        <div class="blog-body">
+        <div class="blog-body" id="blogContent">
             <%= translated.bool ? translated.text : blog.body %>
         </div>
 
-                        <!-- Translate Section -->
+        <!-- Voice Reading Controls -->
+        <div class="voice-reading-section">
+            <div class="voice-controls">
+                <button type="button" class="btn btn-outline-primary" id="playPauseBtn">
+                    <i class="fas fa-play" id="playIcon"></i>
+                    <i class="fas fa-pause" id="pauseIcon" style="display: none;"></i>
+                    <span id="playText">Listen to Article</span>
+                </button>
+                <button type="button" class="btn btn-outline-secondary" id="stopBtn" style="display: none;">
+                    <i class="fas fa-stop"></i>
+                    Stop
+                </button>
+                <div class="voice-settings">
+                    <select id="voiceSelect" class="form-control">
+                        <option value="">Loading voices...</option>
+                    </select>
+                    <input type="range" id="speedControl" min="0.5" max="2" step="0.1" value="1" class="form-control">
+                    <span id="speedValue">1x</span>
+                </div>
+            </div>
+
+            <div class="voice-info" style="margin-top: 1rem; font-size: 0.875rem; color: var(--text-muted);">
+                <i class="fas fa-info-circle"></i>
+                <span id="voiceInfo">Voice reading supports multiple languages. The system will automatically detect your content's language and select the best available voice.</span>
+            </div>
+        </div>
+
+        <!-- Custom Alert Modal -->
+        <div id="customAlert" class="custom-alert" style="display: none;">
+            <div class="custom-alert-content">
+                <div class="custom-alert-header">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span id="alertTitle">Notice</span>
+                </div>
+                <div class="custom-alert-body">
+                    <p id="alertMessage">This is a custom alert message.</p>
+                </div>
+                <div class="custom-alert-footer">
+                    <button type="button" class="btn btn-primary" id="alertOkBtn">OK</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Translate Section -->
         <div class="translate-section">
             <h3><i class="fas fa-language"></i> Translate Blog</h3>
             <form action="/blog/<%= blog._id %>/<%= locals.user ? locals.user._id : 'abc23521aa1bef45662212a2' %>" method="get">
@@ -1003,7 +1197,7 @@
                     
                     if (!selectedLanguage.value) {
                         e.preventDefault();
-                        alert('Please select a language first');
+                        showCustomAlert('Language Required', 'Please select a language first');
                         return false;
                     }
                     
@@ -1035,11 +1229,645 @@
                         console.log('Manually submitting form...');
                         translateForm.submit();
                     } else {
-                        alert('Please select a language first!');
+                        showCustomAlert('Language Required', 'Please select a language first!');
                         console.log('No language selected');
                     }
                 });
             }
+        });
+
+        // Voice Reading Functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Custom Alert Function
+            function showCustomAlert(title, message) {
+                const alertModal = document.getElementById('customAlert');
+                const alertTitle = document.getElementById('alertTitle');
+                const alertMessage = document.getElementById('alertMessage');
+                const alertOkBtn = document.getElementById('alertOkBtn');
+                
+                alertTitle.textContent = title;
+                alertMessage.textContent = message;
+                alertModal.style.display = 'flex';
+                
+                // Focus the OK button for accessibility
+                alertOkBtn.focus();
+                
+                // Close alert when OK is clicked
+                alertOkBtn.onclick = function() {
+                    alertModal.style.display = 'none';
+                };
+                
+                // Close alert when clicking outside
+                alertModal.onclick = function(e) {
+                    if (e.target === alertModal) {
+                        alertModal.style.display = 'none';
+                    }
+                };
+                
+                // Close alert with Escape key
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape' && alertModal.style.display === 'flex') {
+                        alertModal.style.display = 'none';
+                    }
+                });
+            }
+
+            // Voice reading variables
+            let speechSynthesis = window.speechSynthesis;
+            let speechUtterance = null;
+            let isPlaying = false;
+            let currentVoice = null;
+            let currentSpeed = 1;
+            let currentText = '';
+            let voiceReadingEnabled = true;
+            
+            // Override speechSynthesis.speak to prevent it when disabled
+            const originalSpeak = speechSynthesis.speak;
+            speechSynthesis.speak = function(utterance) {
+                if (!voiceReadingEnabled) {
+                    console.log('Speech synthesis blocked - no suitable voice available');
+                    return;
+                }
+                return originalSpeak.call(this, utterance);
+            };
+
+            // DOM elements
+            const playPauseBtn = document.getElementById('playPauseBtn');
+            const stopBtn = document.getElementById('stopBtn');
+            const voiceSelect = document.getElementById('voiceSelect');
+            const speedControl = document.getElementById('speedControl');
+            const speedValue = document.getElementById('speedValue');
+            const playIcon = document.getElementById('playIcon');
+            const pauseIcon = document.getElementById('pauseIcon');
+            const playText = document.getElementById('playText');
+            const blogContent = document.getElementById('blogContent');
+
+            // Initialize voice reading
+            function initVoiceReading() {
+                if (!speechSynthesis) {
+                    console.log('Speech synthesis not supported');
+                    return;
+                }
+
+                // Detect language of the text
+                function detectLanguage(text) {
+                    // Simple language detection based on character sets
+                    const urduPattern = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+                    const arabicPattern = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]/;
+                    const hindiPattern = /[\u0900-\u097F]/;
+                    const chinesePattern = /[\u4E00-\u9FFF]/;
+                    const japanesePattern = /[\u3040-\u309F\u30A0-\u30FF]/;
+                    const koreanPattern = /[\uAC00-\uD7AF]/;
+                    
+                    if (urduPattern.test(text)) return 'ur';
+                    if (arabicPattern.test(text)) return 'ar';
+                    if (hindiPattern.test(text)) return 'hi';
+                    if (chinesePattern.test(text)) return 'zh';
+                    if (japanesePattern.test(text)) return 'ja';
+                    if (koreanPattern.test(text)) return 'ko';
+                    
+                    // Default to English if no specific pattern is found
+                    return 'en';
+                }
+
+                // Load available voices
+                function loadVoices() {
+                    const voices = speechSynthesis.getVoices();
+                    
+                    // Get language from URL parameter first, then fall back to content detection
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const translateParam = urlParams.get('translate');
+                    let contentLanguage = 'en'; // default
+                    
+                    if (translateParam) {
+                        // Map language names to language codes
+                        const languageMap = {
+                            'Urdu': 'ur',
+                            'Arabic': 'ar',
+                            'Hindi': 'hi',
+                            'Chinese Simplified': 'zh',
+                            'Chinese Traditional': 'zh-TW',
+                            'Japanese': 'ja',
+                            'Korean': 'ko',
+                            'Spanish': 'es',
+                            'French': 'fr',
+                            'German': 'de',
+                            'Italian': 'it',
+                            'Portuguese': 'pt',
+                            'Russian': 'ru',
+                            'Dutch': 'nl',
+                            'Polish': 'pl',
+                            'Indonesian': 'id'
+                        };
+                        
+                        contentLanguage = languageMap[translateParam] || 'en';
+                        console.log('Language from URL:', translateParam, '->', contentLanguage);
+                    } else {
+                        contentLanguage = 'en'; // Default to English
+                        console.log('Using default language: en');
+                    }
+                    
+                    // Check if we have a suitable voice for the detected language
+                    const suitableVoice = voices.find(voice => 
+                        voice.lang.startsWith(contentLanguage) || 
+                        voice.lang.includes(contentLanguage)
+                    );
+                    
+                    if (!suitableVoice) {
+                        // No suitable voice found - disable voice reading
+                        console.log('No suitable voice found for language:', contentLanguage);
+                        voiceSelect.innerHTML = '<option value="">No suitable voice available</option>';
+                        voiceSelect.disabled = true;
+                        disableVoiceControls();
+                        return;
+                    }
+                    
+                    // We have a suitable voice, auto-select it and hide the dropdown
+                    const selectedVoice = voices.find(voice => 
+                        voice.lang.startsWith(contentLanguage) || 
+                        voice.lang.includes(contentLanguage)
+                    );
+                    
+                    if (selectedVoice) {
+                        currentVoice = selectedVoice;
+                        console.log('Auto-selected voice:', selectedVoice.name, 'for language:', selectedVoice.lang);
+                        
+                        // Hide the voice selection dropdown
+                        const voiceSettings = document.querySelector('.voice-settings');
+                        if (voiceSettings) {
+                            voiceSettings.style.display = 'none';
+                        }
+                        
+                        // Update voice info
+                        const voiceInfo = document.getElementById('voiceInfo');
+                        if (voiceInfo) {
+                            if (contentLanguage === 'ur') {
+                                voiceInfo.textContent = 'Urdu voice selected automatically.';
+                            } else if (contentLanguage === 'ar') {
+                                voiceInfo.textContent = 'Arabic voice selected automatically.';
+                            } else if (contentLanguage === 'hi') {
+                                voiceInfo.textContent = 'Hindi voice selected automatically.';
+                            } else {
+                                voiceInfo.textContent = 'Voice selected automatically for your content.';
+                            }
+                        }
+                    }
+                }
+
+                // Load voices when available
+                if (speechSynthesis.getVoices().length > 0) {
+                    loadVoices();
+                } else {
+                    speechSynthesis.addEventListener('voiceschanged', loadVoices);
+                }
+
+                // Voice selection change
+                voiceSelect.addEventListener('change', function() {
+                    const voices = speechSynthesis.getVoices();
+                    const selectedIndex = parseInt(this.value);
+                    if (selectedIndex >= 0 && selectedIndex < voices.length) {
+                        currentVoice = voices[selectedIndex];
+                        if (isPlaying) {
+                            stopReading();
+                            startReading();
+                        }
+                    }
+                });
+
+                // Speed control
+                speedControl.addEventListener('input', function() {
+                    currentSpeed = parseFloat(this.value);
+                    speedValue.textContent = currentSpeed + 'x';
+                    if (isPlaying && speechUtterance) {
+                        speechUtterance.rate = currentSpeed;
+                    }
+                });
+
+                // Play/Pause button
+                playPauseBtn.addEventListener('click', function() {
+                    console.log('Button clicked!');
+                    console.log('Button text:', playText.textContent);
+                    console.log('Voice reading enabled:', voiceReadingEnabled);
+                    
+                    // Check if this is the "Voice Not Available" button
+                    if (playText.textContent === 'Voice Not Available - Click for Info') {
+                        console.log('Showing error message...');
+                        // Get the current language from URL
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const translateParam = urlParams.get('translate');
+                        
+                        // Show error message on the page
+                        const voiceInfo = document.getElementById('voiceInfo');
+                        if (voiceInfo) {
+                            if (translateParam) {
+                                voiceInfo.innerHTML = `<span style="color: #e74c3c; font-weight: bold;">❌ Voice reading is not available for ${translateParam} language. No suitable voice found on your system.</span>`;
+                            } else {
+                                voiceInfo.innerHTML = `<span style="color: #e74c3c; font-weight: bold;">❌ Voice reading is not available. No suitable voice found for the current content.</span>`;
+                            }
+                        }
+                        
+                        // Also show custom alert for immediate feedback
+                        if (translateParam) {
+                            showCustomAlert('Voice Not Available', `Voice reading is not available for ${translateParam} language. No suitable voice found on your system.`);
+                        } else {
+                            showCustomAlert('Voice Not Available', 'Voice reading is not available. No suitable voice found for the current content.');
+                        }
+                        return;
+                    }
+                    
+                    // Normal voice reading functionality
+                    if (isPlaying) {
+                        if (speechSynthesis.paused) {
+                            resumeReading();
+                        } else {
+                            pauseReading();
+                        }
+                    } else {
+                        startReading();
+                    }
+                });
+
+                // Stop button
+                stopBtn.addEventListener('click', function() {
+                    // Don't do anything if controls are disabled
+                    if (this.disabled) {
+                        return;
+                    }
+                    stopReading();
+                });
+
+                // Speech events
+                speechSynthesis.addEventListener('end', function() {
+                    isPlaying = false;
+                    updatePlayButton();
+                    removeHighlighting();
+                });
+
+                speechSynthesis.addEventListener('pause', function() {
+                    isPlaying = false;
+                    updatePlayButton();
+                });
+
+                speechSynthesis.addEventListener('resume', function() {
+                    isPlaying = true;
+                    updatePlayButton();
+                });
+            }
+
+
+
+            // Start reading
+            function startReading() {
+                // Check if voice reading is enabled
+                if (!voiceReadingEnabled) {
+                    console.log('Voice reading is disabled - no suitable voice available');
+                    
+                    // Get the current language from URL
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const translateParam = urlParams.get('translate');
+                    
+                    if (translateParam) {
+                        showCustomAlert('Voice Not Available', `Voice reading is not available for ${translateParam} language. No suitable voice found on your system.`);
+                    } else {
+                        showCustomAlert('Voice Not Available', 'Voice reading is not available. No suitable voice found for the current content.');
+                    }
+                    return;
+                }
+
+                currentText = blogContent.textContent.trim();
+                if (!currentText) {
+                    showCustomAlert('No Content', 'No content to read');
+                    return;
+                }
+
+                // If no voice is selected, try to auto-select one
+                if (!currentVoice) {
+                    const voices = speechSynthesis.getVoices();
+                    
+                    // Get language from URL parameter first, then fall back to content detection
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const translateParam = urlParams.get('translate');
+                    let contentLanguage = 'en'; // default
+                    
+                    if (translateParam) {
+                        // Map language names to language codes
+                        const languageMap = {
+                            'Urdu': 'ur',
+                            'Arabic': 'ar',
+                            'Hindi': 'hi',
+                            'Chinese Simplified': 'zh',
+                            'Chinese Traditional': 'zh-TW',
+                            'Japanese': 'ja',
+                            'Korean': 'ko',
+                            'Spanish': 'es',
+                            'French': 'fr',
+                            'German': 'de',
+                            'Italian': 'it',
+                            'Portuguese': 'pt',
+                            'Russian': 'ru',
+                            'Dutch': 'nl',
+                            'Polish': 'pl',
+                            'Indonesian': 'id'
+                        };
+                        
+                        contentLanguage = languageMap[translateParam] || 'en';
+                        console.log('Language from URL:', translateParam, '->', contentLanguage);
+                    } else {
+                        contentLanguage = 'en'; // Default to English
+                        console.log('Using default language: en');
+                    }
+                    
+                    // Try to find a matching voice
+                    let selectedVoice = voices.find(voice => 
+                        voice.lang.startsWith(contentLanguage) || 
+                        voice.lang.includes(contentLanguage)
+                    );
+                    
+                    if (selectedVoice) {
+                        currentVoice = selectedVoice;
+                        const index = voices.indexOf(selectedVoice);
+                        voiceSelect.value = index;
+                        console.log('Auto-selected voice:', selectedVoice.name, 'for language:', selectedVoice.lang);
+                    } else {
+                        console.log(`No voice available for ${contentLanguage.toUpperCase()} language. Voice reading is not available for this content.`);
+                        disableVoiceControls();
+                        return;
+                    }
+                }
+
+                // Stop any current speech
+                speechSynthesis.cancel();
+
+                // Create new utterance for the entire text
+                speechUtterance = new SpeechSynthesisUtterance(currentText);
+                speechUtterance.voice = currentVoice;
+                speechUtterance.rate = currentSpeed;
+                speechUtterance.pitch = 1;
+                speechUtterance.volume = 1;
+
+                // Add event listeners
+                speechUtterance.addEventListener('start', function() {
+                    isPlaying = true;
+                    updatePlayButton();
+                });
+
+                speechUtterance.addEventListener('end', function() {
+                    isPlaying = false;
+                    updatePlayButton();
+                    removeHighlighting();
+                });
+
+                speechUtterance.addEventListener('pause', function() {
+                    console.log('Speech utterance paused');
+                    updatePlayButton();
+                });
+
+                speechUtterance.addEventListener('resume', function() {
+                    console.log('Speech utterance resumed');
+                    updatePlayButton();
+                });
+
+                // Start speaking (will be blocked by override if disabled)
+                speechSynthesis.speak(speechUtterance);
+            }
+
+
+
+            // Pause reading
+            function pauseReading() {
+                if (speechSynthesis.speaking && !speechSynthesis.paused) {
+                    speechSynthesis.pause();
+                    console.log('Paused speech synthesis');
+                }
+            }
+
+            // Resume reading
+            function resumeReading() {
+                if (speechSynthesis.paused) {
+                    speechSynthesis.resume();
+                    console.log('Resumed speech synthesis');
+                }
+            }
+
+            // Stop reading
+            function stopReading() {
+                speechSynthesis.cancel();
+                isPlaying = false;
+                updatePlayButton();
+                removeHighlighting();
+            }
+
+
+
+            // Update play button
+            function updatePlayButton() {
+                if (speechSynthesis.speaking) {
+                    if (speechSynthesis.paused) {
+                        playIcon.style.display = 'inline';
+                        pauseIcon.style.display = 'none';
+                        playText.textContent = 'Resume';
+                    } else {
+                        playIcon.style.display = 'none';
+                        pauseIcon.style.display = 'inline';
+                        playText.textContent = 'Pause';
+                    }
+                    stopBtn.style.display = 'inline-flex';
+                } else {
+                    playIcon.style.display = 'inline';
+                    pauseIcon.style.display = 'none';
+                    playText.textContent = 'Listen to Article';
+                    stopBtn.style.display = 'none';
+                }
+            }
+
+
+
+            // Remove highlighting
+            function removeHighlighting() {
+                const highlighted = document.querySelectorAll('.speaking');
+                highlighted.forEach(el => el.classList.remove('speaking'));
+            }
+
+            // Disable voice controls when no suitable voice is available
+            function disableVoiceControls() {
+                voiceReadingEnabled = false;
+                
+                // Keep the button but change its text and make it show error when clicked
+                playPauseBtn.disabled = false; // Re-enable to allow clicking
+                playPauseBtn.style.opacity = '0.6';
+                playText.textContent = 'Voice Not Available - Click for Info';
+                playIcon.style.display = 'inline';
+                pauseIcon.style.display = 'none';
+                
+                // Disable other controls
+                stopBtn.disabled = true;
+                voiceSelect.disabled = true;
+                speedControl.disabled = true;
+                
+                // Cancel any ongoing speech immediately
+                speechSynthesis.cancel();
+                
+                // Force stop any speaking
+                if (speechSynthesis.speaking) {
+                    speechSynthesis.pause();
+                    speechSynthesis.cancel();
+                }
+            }
+
+            // Enable voice controls when suitable voice is available
+            function enableVoiceControls() {
+                voiceReadingEnabled = true;
+                playPauseBtn.disabled = false;
+                stopBtn.disabled = false;
+                voiceSelect.disabled = false;
+                speedControl.disabled = false;
+                
+                // Reset button text
+                playText.textContent = 'Listen to Article';
+                playIcon.style.display = 'inline';
+                pauseIcon.style.display = 'none';
+            }
+
+            // Function to update voice selection based on current content
+            function updateVoiceForCurrentContent() {
+                const currentContent = blogContent.textContent.trim();
+                
+                // Get language from URL parameter first, then fall back to content detection
+                const urlParams = new URLSearchParams(window.location.search);
+                const translateParam = urlParams.get('translate');
+                let contentLanguage = 'en'; // default
+                
+                if (translateParam) {
+                    // Map language names to language codes
+                    const languageMap = {
+                        'Urdu': 'ur',
+                        'Arabic': 'ar',
+                        'Hindi': 'hi',
+                        'Chinese Simplified': 'zh',
+                        'Chinese Traditional': 'zh-TW',
+                        'Japanese': 'ja',
+                        'Korean': 'ko',
+                        'Spanish': 'es',
+                        'French': 'fr',
+                        'German': 'de',
+                        'Italian': 'it',
+                        'Portuguese': 'pt',
+                        'Russian': 'ru',
+                        'Dutch': 'nl',
+                        'Polish': 'pl',
+                        'Indonesian': 'id'
+                    };
+                    
+                    contentLanguage = languageMap[translateParam] || detectLanguage(currentContent);
+                    console.log('Updating voice - Language from URL:', translateParam, '->', contentLanguage);
+                } else {
+                    contentLanguage = detectLanguage(currentContent);
+                    console.log('Updating voice - Detected content language:', contentLanguage);
+                }
+                
+                const voices = speechSynthesis.getVoices();
+                
+                // Try to find a voice matching the detected language
+                let selectedVoice = voices.find(voice => 
+                    voice.lang.startsWith(contentLanguage) || 
+                    voice.lang.includes(contentLanguage)
+                );
+
+                if (selectedVoice) {
+                    currentVoice = selectedVoice;
+                    const index = voices.indexOf(selectedVoice);
+                    voiceSelect.value = index;
+                    console.log('Updated voice to:', selectedVoice.name, 'for language:', selectedVoice.lang);
+                    enableVoiceControls();
+                    
+                    // Update voice info
+                    const voiceInfo = document.getElementById('voiceInfo');
+                    if (voiceInfo) {
+                        if (contentLanguage === 'ur') {
+                            voiceInfo.textContent = 'Urdu content detected. Voice updated to: ' + selectedVoice.name;
+                        } else if (contentLanguage === 'ar') {
+                            voiceInfo.textContent = 'Arabic content detected. Voice updated to: ' + selectedVoice.name;
+                        } else if (contentLanguage === 'hi') {
+                            voiceInfo.textContent = 'Hindi content detected. Voice updated to: ' + selectedVoice.name;
+                        } else {
+                            voiceInfo.textContent = 'Voice updated to: ' + selectedVoice.name + ' for current content.';
+                        }
+                    }
+                } else {
+                    // No suitable voice found
+                    currentVoice = null;
+                    voiceSelect.value = '';
+                    disableVoiceControls();
+                    
+                    // Update voice info
+                    const voiceInfo = document.getElementById('voiceInfo');
+                    if (voiceInfo) {
+                        if (contentLanguage === 'ur') {
+                            voiceInfo.textContent = 'Urdu content detected. No Urdu voice available. Voice reading disabled.';
+                        } else if (contentLanguage === 'ar') {
+                            voiceInfo.textContent = 'Arabic content detected. No Arabic voice available. Voice reading disabled.';
+                        } else if (contentLanguage === 'hi') {
+                            voiceInfo.textContent = 'Hindi content detected. No Hindi voice available. Voice reading disabled.';
+                        } else {
+                            voiceInfo.textContent = `No voice available for ${contentLanguage.toUpperCase()} language. Voice reading disabled.`;
+                        }
+                    }
+                }
+            }
+
+            // Debug: List all available voices
+            function debugVoices() {
+                if ('speechSynthesis' in window) {
+                    const voices = speechSynthesis.getVoices();
+                    console.log('=== AVAILABLE VOICES ===');
+                    console.log(`Total voices found: ${voices.length}`);
+                    voices.forEach((voice, index) => {
+                        console.log(`${index}: Name: ${voice.name}, Lang: ${voice.lang}, Local Service: ${voice.localService}, Default: ${voice.default}`);
+                    });
+                    console.log('=== END VOICES ===');
+                    
+                    // Check for Urdu voices specifically
+                    const urduVoices = voices.filter(voice => 
+                        voice.lang.startsWith('ur') || 
+                        voice.lang.includes('ur') ||
+                        voice.name.toLowerCase().includes('urdu')
+                    );
+                    console.log('=== URDU VOICES ===');
+                    if (urduVoices.length > 0) {
+                        urduVoices.forEach(voice => {
+                            console.log(`Urdu Voice: ${voice.name}, Lang: ${voice.lang}, Local Service: ${voice.localService}`);
+                        });
+                    } else {
+                        console.log('No Urdu voices found');
+                    }
+                    console.log('=== END URDU VOICES ===');
+                } else {
+                    console.log('Web Speech API is not supported in this browser.');
+                }
+            }
+
+            // Initialize voice reading
+            initVoiceReading();
+            
+            // Debug voices after a short delay to ensure they're loaded
+            setTimeout(debugVoices, 1000);
+            
+            // Add observer to detect content changes (for translations)
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.type === 'childList' || mutation.type === 'characterData') {
+                        // Content changed, update voice selection
+                        setTimeout(updateVoiceForCurrentContent, 100);
+                    }
+                });
+            });
+            
+            // Start observing the blog content
+            observer.observe(blogContent, {
+                childList: true,
+                characterData: true,
+                subtree: true
+            });
         });
     </script>
 </body>
