@@ -53,7 +53,8 @@
 - **API Security**: JWT authentication and authorization
 - **Database**: MongoDB with Mongoose ODM
 - **Cloud Storage**: Cloudinary for media storage
-- **Health Monitoring**: Automated health checks every 5 minutes
+- **Health Monitoring**: Automated health checks every 10 seconds
+- **Keep-Alive System**: Integrated keep-alive functionality to prevent service sleep
 
 ## 🏗️ Architecture
 
@@ -89,6 +90,42 @@ blogify/
 ├── keep-alive.js        # Health monitoring script
 ├── languages.js         # Language configuration
 └── render.yaml          # Render deployment config
+```
+
+## 🔄 Keep-Alive System
+
+### **Overview**
+The application includes an integrated keep-alive system that automatically pings the health endpoint every 10 seconds to prevent the service from going to sleep, especially important for free-tier hosting platforms like Render.
+
+### **Features**
+- **Automatic Health Checks**: Pings `/health` endpoint every 10 seconds
+- **Integrated**: Runs automatically when the server starts
+- **Configurable**: Can be customized via environment variables
+- **Error Handling**: Graceful error handling with timeout protection
+- **Logging**: Detailed console logging for monitoring
+
+### **Configuration**
+```bash
+# Environment Variables
+APP_URL=https://your-app-url.onrender.com  # Your app's URL
+PING_INTERVAL=10000                        # Interval in milliseconds (10 seconds)
+```
+
+### **Manual Keep-Alive Script**
+If you prefer to run keep-alive as a separate process:
+```bash
+npm run keep-alive
+```
+
+### **Health Endpoint**
+The application provides a health check endpoint at `/health` that returns:
+```json
+{
+  "status": "OK",
+  "timestamp": "2024-01-01T00:00:00.000Z",
+  "uptime": 3600,
+  "environment": "production"
+}
 ```
 
 ## 🚀 Getting Started

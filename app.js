@@ -1,4 +1,5 @@
 const http = require("http");
+const https = require("https");
 const express = require("express");
 const { Server } = require("socket.io");
 const app = express();
@@ -6,6 +7,35 @@ const server = http.createServer(app);
 const io = new Server(server);
 const User = require("./models/user");
 let connectedUsers = {};
+
+// Keep-alive configuration
+const APP_URL = process.env.APP_URL || 'http://localhost:3000';
+const PING_INTERVAL = 10 * 1000; // 10 seconds
+
+// Keep-alive function
+function pingApp() {
+  const url = new URL(APP_URL);
+  const protocol = url.protocol === 'https:' ? https : http;
+  
+  const req = protocol.get(APP_URL + '/health', (res) => {
+    console.log(`[${new Date().toISOString()}] Health check response: ${res.statusCode}`);
+    
+    if (res.statusCode === 200) {
+      console.log('✅ App is alive and responding');
+    } else {
+      console.log('⚠️ App responded but with non-200 status');
+    }
+  });
+
+  req.on('error', (err) => {
+    console.error(`❌ Error pinging app: ${err.message}`);
+  });
+
+  req.setTimeout(10000, () => {
+    console.error('❌ Request timeout');
+    req.destroy();
+  });
+}
 
 // Socket.IO setup
 io.on('connection', (socket) => {
@@ -370,4 +400,14 @@ app.use((req, res) => {
 
 server.listen(PORT, () => {
   console.log("server connected!");
+  
+  // Start keep-alive service
+  console.log(`🚀 Starting keep-alive service for: ${APP_URL}`);
+  console.log(`⏰ Pinging every ${PING_INTERVAL / 1000} seconds`);
+  
+  // Initial ping
+  pingApp();
+  
+  // Set up periodic pinging
+  setInterval(pingApp, PING_INTERVAL);
 });

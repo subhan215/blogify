@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "nodemon app.js",
     "start": "node app.js",
-    "keep-alive": "node keep-alive.js"
+    "keep-alive": "node keep-alive.js",
+    "start-with-keepalive": "node app.js",
+    "test-keepalive": "node test-keepalive.js"
   },
   "author": "",
   "license": "ISC",

@@ -3,7 +3,7 @@ const http = require('http');
 
 // Configuration
 const APP_URL = process.env.APP_URL; // Replace with your actual Render URL
-const PING_INTERVAL = 14 * 60 * 1000; // 14 minutes (less than 15 to be safe)
+const PING_INTERVAL = 10 * 1000; // 10 seconds
 
 function pingApp() {
   const url = new URL(APP_URL);
@@ -31,7 +31,7 @@ function pingApp() {
 
 // Start the keep-alive process
 console.log(`🚀 Starting keep-alive service for: ${APP_URL}`);
-console.log(`⏰ Pinging every ${PING_INTERVAL / 1000 / 60} minutes`);
+console.log(`⏰ Pinging every ${PING_INTERVAL / 1000} seconds`);
 
 // Initial ping
 pingApp();
