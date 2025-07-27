@@ -7,12 +7,17 @@
     "start": "node app.js",
     "keep-alive": "node keep-alive.js",
     "start-with-keepalive": "node app.js",
-    "test-keepalive": "node test-keepalive.js"
+    "test-keepalive": "node test-keepalive.js",
+    "test-scheduling": "node test-scheduling.js",
+    "test-trigger": "node test-trigger.js",
+    "trigger:dev": "node trigger-server.js",
+    "trigger:deploy": "npx trigger.dev@latest deploy"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@trigger.dev/sdk": "^3.3.17",
     "@vitalets/google-translate-api": "^9.2.1",
     "axios": "^1.10.0",
     "cloudinary": "^1.41.3",

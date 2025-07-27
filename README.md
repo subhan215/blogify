@@ -53,7 +53,7 @@
 - **API Security**: JWT authentication and authorization
 - **Database**: MongoDB with Mongoose ODM
 - **Cloud Storage**: Cloudinary for media storage
-- **Health Monitoring**: Automated health checks every 10 seconds
+- **Health Monitoring**: Automated health checks every 5 minutes via Trigger.dev
 - **Keep-Alive System**: Integrated keep-alive functionality to prevent service sleep
 
 ## 🏗️ Architecture
@@ -76,10 +76,11 @@
 ### **Project Structure**
 ```
 blogify/
-├── .github/workflows/     # GitHub Actions (health monitoring)
 ├── config/               # Configuration files
 ├── connection/           # Database connection
 ├── controllers/          # Business logic
+├── jobs/                 # Trigger.dev job definitions
+│   └── health-check.js   # Health check cron job
 ├── middlewares/          # Express middlewares
 ├── models/              # MongoDB schemas
 ├── public/              # Static assets (CSS, JS, images)
@@ -87,34 +88,39 @@ blogify/
 ├── services/            # External service integrations
 ├── views/               # EJS templates
 ├── app.js               # Main application file
-├── keep-alive.js        # Health monitoring script
+├── keep-alive.js        # Fallback health monitoring script
+├── trigger-server.js    # Trigger.dev server
+├── trigger.config.js    # Trigger.dev configuration
 ├── languages.js         # Language configuration
+├── TRIGGER_SETUP.md     # Trigger.dev setup guide
 └── render.yaml          # Render deployment config
 ```
 
-## 🔄 Keep-Alive System
+## 🔄 Health Monitoring System
 
 ### **Overview**
-The application includes an integrated keep-alive system that automatically pings the health endpoint every 10 seconds to prevent the service from going to sleep, especially important for free-tier hosting platforms like Render.
+The application uses Trigger.dev for reliable health monitoring that runs every 5 minutes, providing better reliability than GitHub Actions and more detailed monitoring capabilities.
 
 ### **Features**
-- **Automatic Health Checks**: Pings `/health` endpoint every 10 seconds
-- **Integrated**: Runs automatically when the server starts
-- **Configurable**: Can be customized via environment variables
-- **Error Handling**: Graceful error handling with timeout protection
-- **Logging**: Detailed console logging for monitoring
+- **Scheduled Health Checks**: Runs every 5 minutes via Trigger.dev cron jobs
+- **Detailed Logging**: Comprehensive logs with metrics and uptime tracking
+- **Error Handling**: Graceful error handling with detailed error reporting
+- **Monitoring Dashboard**: View health check history and metrics in Trigger.dev dashboard
+- **Alerting**: Built-in alerting for failed health checks
+- **Fallback System**: Integrated keep-alive system as backup
+
+### **Trigger.dev Setup**
+1. **Create Account**: Sign up at [Trigger.dev](https://trigger.dev)
+2. **Configure**: Follow the setup guide in `TRIGGER_SETUP.md`
+3. **Deploy**: Run `npm run trigger:deploy` to deploy health check jobs
+4. **Monitor**: View results in your Trigger.dev dashboard
 
 ### **Configuration**
 ```bash
 # Environment Variables
-APP_URL=https://your-app-url.onrender.com  # Your app's URL
-PING_INTERVAL=10000                        # Interval in milliseconds (10 seconds)
-```
-
-### **Manual Keep-Alive Script**
-If you prefer to run keep-alive as a separate process:
-```bash
-npm run keep-alive
+TRIGGER_API_KEY=your_trigger_dev_api_key
+APP_URL=https://your-app-url.onrender.com
+NODE_ENV=production
 ```
 
 ### **Health Endpoint**
@@ -126,6 +132,12 @@ The application provides a health check endpoint at `/health` that returns:
   "uptime": 3600,
   "environment": "production"
 }
+```
+
+### **Fallback Keep-Alive**
+For additional reliability, the app also includes an integrated keep-alive system:
+```bash
+npm run keep-alive  # Manual keep-alive script
 ```
 
 ## 🚀 Getting Started

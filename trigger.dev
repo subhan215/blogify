@@ -1,0 +1,14 @@
+# Trigger.dev configuration
+# This file configures your Trigger.dev project
+
+# Project ID (you'll get this from your Trigger.dev dashboard)
+projectId: "your-project-id"
+
+# Environment (development, staging, production)
+environment: "development"
+
+# API Key (you'll get this from your Trigger.dev dashboard)
+apiKey: "your-api-key"
+
+# Endpoint URL (your app's URL)
+endpointUrl: "https://your-app-url.onrender.com" 

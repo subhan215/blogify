@@ -9,33 +9,8 @@ const User = require("./models/user");
 let connectedUsers = {};
 
 // Keep-alive configuration
-const APP_URL = process.env.APP_URL || 'http://localhost:3000';
 const PING_INTERVAL = 10 * 1000; // 10 seconds
-
-// Keep-alive function
-function pingApp() {
-  const url = new URL(APP_URL);
-  const protocol = url.protocol === 'https:' ? https : http;
-  
-  const req = protocol.get(APP_URL + '/health', (res) => {
-    console.log(`[${new Date().toISOString()}] Health check response: ${res.statusCode}`);
-    
-    if (res.statusCode === 200) {
-      console.log('✅ App is alive and responding');
-    } else {
-      console.log('⚠️ App responded but with non-200 status');
-    }
-  });
-
-  req.on('error', (err) => {
-    console.error(`❌ Error pinging app: ${err.message}`);
-  });
-
-  req.setTimeout(10000, () => {
-    console.error('❌ Request timeout');
-    req.destroy();
-  });
-}
+let keepAliveCounter = 0;
 
 // Socket.IO setup
 io.on('connection', (socket) => {
@@ -146,6 +121,35 @@ io.on('connection', (socket) => {
 
 require("dotenv").config();
 const PORT = process.env.PORT || 8000;
+
+// Keep-alive function (defined after PORT is available)
+function pingApp() {
+  keepAliveCounter++;
+  
+  // Use the same server that's running this app
+  const serverUrl = `http://localhost:${PORT}`;
+  
+  console.log(`[${new Date().toISOString()}] 🔄 Keep-alive ping #${keepAliveCounter} started...`);
+  
+  const req = http.get(serverUrl + '/health', (res) => {
+    console.log(`[${new Date().toISOString()}] Health check response: ${res.statusCode}`);
+    
+    if (res.statusCode === 200) {
+      console.log(`✅ App is alive and responding (ping #${keepAliveCounter})`);
+    } else {
+      console.log(`⚠️ App responded but with non-200 status (ping #${keepAliveCounter})`);
+    }
+  });
+
+  req.on('error', (err) => {
+    console.error(`❌ Error pinging app (ping #${keepAliveCounter}): ${err.message}`);
+  });
+
+  req.setTimeout(10000, () => {
+    console.error(`❌ Request timeout (ping #${keepAliveCounter})`);
+    req.destroy();
+  });
+}
 const path = require("path");
 const userRoute = require("./routes/user");
 const blogRoute = require("./routes/blog");
@@ -401,13 +405,45 @@ app.use((req, res) => {
 server.listen(PORT, () => {
   console.log("server connected!");
   
-  // Start keep-alive service
-  console.log(`🚀 Starting keep-alive service for: ${APP_URL}`);
-  console.log(`⏰ Pinging every ${PING_INTERVAL / 1000} seconds`);
-  
-  // Initial ping
-  pingApp();
-  
-  // Set up periodic pinging
-  setInterval(pingApp, PING_INTERVAL);
+  // Start keep-alive service after a short delay to ensure server is ready
+  setTimeout(() => {
+    console.log(`🚀 Starting keep-alive service for: http://localhost:${PORT}`);
+    console.log(`⏰ Pinging every ${PING_INTERVAL / 1000} seconds`);
+    
+    // Initial ping
+    pingApp();
+    
+    // Set up periodic pinging with error handling
+    const keepAliveInterval = setInterval(() => {
+      try {
+        pingApp();
+      } catch (error) {
+        console.error('❌ Error in keep-alive interval:', error);
+      }
+    }, PING_INTERVAL);
+    
+    // Store the interval ID for potential cleanup
+    global.keepAliveInterval = keepAliveInterval;
+    
+    console.log('✅ Keep-alive scheduling completed successfully');
+  }, 2000); // 2 second delay
+});
+
+// Clean up keep-alive interval on process exit
+process.on('SIGINT', () => {
+  console.log('\n🛑 Shutting down server...');
+  if (global.keepAliveInterval) {
+    clearInterval(global.keepAliveInterval);
+    console.log('✅ Keep-alive interval cleared');
+  }
+  process.exit(0);
+});
+
+process.on('SIGTERM', () => {
+  console.log('\n🛑 Shutting down server...');
+  if (global.keepAliveInterval) {
+    clearInterval(global.keepAliveInterval);
+    console.log('✅ Keep-alive interval cleared');
+  }
+  process.exit(0);
 });
