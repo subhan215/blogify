@@ -134,10 +134,21 @@ function pingApp() {
     serverUrl = `http://localhost:${PORT}`;
   }
   
-  console.log(`[${new Date().toISOString()}] 🔄 Keep-alive ping #${keepAliveCounter} started...`);
-  console.log(`[${new Date().toISOString()}] 📡 Pinging: ${serverUrl}/health`);
+  // Clean the URL to remove any trailing slashes
+  serverUrl = serverUrl.replace(/\/+$/, '');
   
-  const req = http.get(serverUrl + '/health', (res) => {
+  // Ensure the URL doesn't end with a slash to avoid double slashes
+  const cleanUrl = serverUrl.endsWith('/') ? serverUrl.slice(0, -1) : serverUrl;
+  const healthUrl = `${cleanUrl}/health`;
+  
+  console.log(`[${new Date().toISOString()}] 🔄 Keep-alive ping #${keepAliveCounter} started...`);
+  console.log(`[${new Date().toISOString()}] 📡 Pinging: ${healthUrl}`);
+  
+  // Use https for HTTPS URLs, http for HTTP URLs
+  const isHttps = cleanUrl.startsWith('https://');
+  const httpModule = isHttps ? https : http;
+  
+  const req = httpModule.get(healthUrl, (res) => {
     console.log(`[${new Date().toISOString()}] Health check response: ${res.statusCode}`);
     
     if (res.statusCode === 200) {

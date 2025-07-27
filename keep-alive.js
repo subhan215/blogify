@@ -6,10 +6,14 @@ const APP_URL = process.env.APP_URL; // Replace with your actual Render URL
 const PING_INTERVAL = 10 * 1000; // 10 seconds
 
 function pingApp() {
-  const url = new URL(APP_URL);
+  // Clean the URL to remove any trailing slashes
+  const cleanAppUrl = APP_URL.replace(/\/+$/, '');
+  const healthUrl = `${cleanAppUrl}/health`;
+  
+  const url = new URL(cleanAppUrl);
   const protocol = url.protocol === 'https:' ? https : http;
   
-  const req = protocol.get(APP_URL + '/health', (res) => {
+  const req = protocol.get(healthUrl, (res) => {
     console.log(`[${new Date().toISOString()}] Health check response: ${res.statusCode}`);
     
     if (res.statusCode === 200) {
