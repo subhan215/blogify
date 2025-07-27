@@ -28,7 +28,6 @@ client.defineJob({
       });
       
       const statusCode = response.status;
-      const responseTime = Date.now();
       
       io.logger.info(`📊 Health check response: ${statusCode}`);
       
@@ -42,15 +41,6 @@ client.defineJob({
             environment: data.environment,
             timestamp: data.timestamp,
           });
-          
-          // Log success metrics
-          await io.logger.info("📈 Health check successful", {
-            statusCode,
-            responseTime,
-            uptime: data.uptime,
-            environment: data.environment,
-          });
-          
         } catch (parseError) {
           io.logger.warn("⚠️ Health check succeeded but couldn't parse JSON response", {
             statusCode,
@@ -64,13 +54,6 @@ client.defineJob({
           statusText: response.statusText,
           url: `${appUrl}/health`,
         });
-        
-        // You could add alerting here (email, Slack, etc.)
-        await io.logger.error("🚨 App health check failed - manual intervention may be required", {
-          statusCode,
-          url: appUrl,
-          timestamp: new Date().toISOString(),
-        });
       }
       
     } catch (error) {
@@ -80,16 +63,9 @@ client.defineJob({
         url: `${appUrl}/health`,
         timestamp: new Date().toISOString(),
       });
-      
-      // You could add alerting here for critical failures
-      await io.logger.error("🚨 Critical health check failure", {
-        error: error.message,
-        url: appUrl,
-        timestamp: new Date().toISOString(),
-      });
     }
   },
 });
 
-// Export the client for use in your app
-export default client; 
+console.log("✅ Trigger.dev job defined successfully");
+console.log("🚀 Ready for deployment with: npx trigger.dev@latest deploy"); 

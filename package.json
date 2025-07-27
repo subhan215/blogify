@@ -10,7 +10,7 @@
     "test-keepalive": "node test-keepalive.js",
     "test-scheduling": "node test-scheduling.js",
     "test-trigger": "node test-trigger.js",
-    "trigger:dev": "node trigger-server.js",
+    "trigger:dev": "npx trigger.dev@latest dev",
     "trigger:deploy": "npx trigger.dev@latest deploy"
   },
   "author": "",
@@ -38,5 +38,8 @@
     "socket.io": "^4.7.5",
     "translate-google": "^1.5.0",
     "translatte": "^3.0.1"
+  },
+  "devDependencies": {
+    "@trigger.dev/build": "^3.3.17"
   }
 }

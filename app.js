@@ -126,10 +126,16 @@ const PORT = process.env.PORT || 8000;
 function pingApp() {
   keepAliveCounter++;
   
-  // Use the same server that's running this app
-  const serverUrl = `http://localhost:${PORT}`;
+  // Use the correct URL based on environment
+  let serverUrl;
+  if (process.env.NODE_ENV === 'production' && process.env.APP_URL) {
+    serverUrl = process.env.APP_URL;
+  } else {
+    serverUrl = `http://localhost:${PORT}`;
+  }
   
   console.log(`[${new Date().toISOString()}] 🔄 Keep-alive ping #${keepAliveCounter} started...`);
+  console.log(`[${new Date().toISOString()}] 📡 Pinging: ${serverUrl}/health`);
   
   const req = http.get(serverUrl + '/health', (res) => {
     console.log(`[${new Date().toISOString()}] Health check response: ${res.statusCode}`);
@@ -209,9 +215,14 @@ app.use((req, res, next) => {
 
 app.use(express.static(path.resolve("./public")));
 
-// Force HTTPS in production
+// Force HTTPS in production (but allow health checks)
 if (process.env.NODE_ENV === 'production') {
   app.use((req, res, next) => {
+    // Skip HTTPS redirect for health checks and internal requests
+    if (req.path === '/health' || req.path === '/api/trigger/health') {
+      return next();
+    }
+    
     if (req.header('x-forwarded-proto') !== 'https') {
       res.redirect(`https://${req.header('host')}${req.url}`);
     } else {
@@ -407,7 +418,11 @@ server.listen(PORT, () => {
   
   // Start keep-alive service after a short delay to ensure server is ready
   setTimeout(() => {
-    console.log(`🚀 Starting keep-alive service for: http://localhost:${PORT}`);
+    const keepAliveUrl = process.env.NODE_ENV === 'production' && process.env.APP_URL 
+      ? process.env.APP_URL 
+      : `http://localhost:${PORT}`;
+    
+    console.log(`🚀 Starting keep-alive service for: ${keepAliveUrl}`);
     console.log(`⏰ Pinging every ${PING_INTERVAL / 1000} seconds`);
     
     // Initial ping

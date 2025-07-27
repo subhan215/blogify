@@ -1,21 +1,12 @@
 import { TriggerClient } from "@trigger.dev/sdk";
 import express from "express";
 
-// Import the health check job
-import { healthCheckJob } from "./jobs/health-check.js";
-
 // Initialize Express app
 const app = express();
 app.use(express.json());
 
-// Initialize Trigger.dev client
-const client = new TriggerClient({
-  id: "blogify-health-check",
-  apiKey: process.env.TRIGGER_API_KEY,
-});
-
-// Register the health check job
-client.defineJob(healthCheckJob);
+// Import and initialize Trigger.dev client (this will register the job)
+import "./jobs/health-check.js";
 
 // Health check endpoint for Trigger.dev
 app.get("/api/trigger/health", (req, res) => {

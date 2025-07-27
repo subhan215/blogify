@@ -519,6 +519,14 @@
             font-size: 0.875rem;
         }
 
+        .comment-like i.liked {
+            color: var(--danger-color);
+        }
+
+        .comment-like i.not-liked {
+            color: var(--text-secondary);
+        }
+
         .comment-edit {
             display: none;
             margin-top: 1rem;
@@ -999,7 +1007,7 @@
                     <% if (locals.user) { %>
                     <form action="/blog/<%= blog._id %>/comment/<%= comment._id %>/like" method="post" style="display: inline;">
                         <button type="submit" class="comment-like">
-                            <i class="fas <%= comment.likes.includes(locals.user._id) ? 'fa-heart' : 'fa-heart' %>" style="color: <%= comment.likes.includes(locals.user._id) ? 'var(--danger-color)' : 'var(--text-secondary)' %>;"></i>
+                            <i class="fas <%= comment.likes.includes(locals.user._id) ? 'fa-heart' : 'fa-heart' %> <%= comment.likes.includes(locals.user._id) ? 'liked' : 'not-liked' %>"></i>
                             <%= comment.likes.length %> Likes
                         </button>
                     </form>
